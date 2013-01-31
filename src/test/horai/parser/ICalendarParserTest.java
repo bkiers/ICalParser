@@ -1401,7 +1401,6 @@ public class ICalendarParserTest {
         assertThat( ctx.text().getText(), is("Conference Room - F123\\, Bldg. 002") );
     }
 
-    /*
     @Test
     public void percentTest() {
 
@@ -1414,7 +1413,8 @@ public class ICalendarParserTest {
 
         ICalendarParser.PercentContext ctx = getParser(source).percent();
 
-        // TODO
+        assertThat( ctx.k_percent_complete().getText(), is("PERCENT-COMPLETE") );
+        assertThat( ctx.integer().getText(), is("39") );
     }
 
     @Test
@@ -1429,10 +1429,11 @@ public class ICalendarParserTest {
 
         ICalendarParser.PriorityContext ctx = getParser(source).priority();
 
-        // TODO
+        assertThat( ctx.k_priority().getText(), is("PRIORITY") );
+        assertThat( ctx.priovalue().getText(), is("1") );
     }
 
-    @Test
+    /*@Test
     public void resourcesTest() {
 
         // 3.8.1.10 - Resources
