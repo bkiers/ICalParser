@@ -1,5 +1,6 @@
 package horai.parser;
 
+import horai.util.Debug;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
@@ -14,6 +15,7 @@ public class ICalendarParserTest {
         ICalendarLexer lexer = new ICalendarLexer(new ANTLRInputStream(source));
         return new ICalendarParser(new CommonTokenStream(lexer));
     }
+
 
     @Test
     public void altrepparamTest() {
@@ -31,9 +33,10 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.ALTREP().getText(), is(paramName) );
+        assertThat( ctx.k_altrep().getText(), is(paramName) );
         assertThat( ctx.uri().getText(), is(value) );
     }
+
 
     @Test
     public void cnparamTest() {
@@ -51,7 +54,7 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.CN().getText(), is(paramName) );
+        assertThat( ctx.k_cn().getText(), is(paramName) );
         assertThat( ctx.param_value().getText(), is(value) );
     }
 
@@ -70,7 +73,6 @@ public class ICalendarParserTest {
         //               )
         //  ;
 
-
         String paramName = "CUTYPE";
         String value = "GROUP";
         String source = paramName + "=" + value;
@@ -79,8 +81,8 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.CUTYPE().getText(), is(paramName) );
-        assertThat( ctx.GROUP().getText(), is(value) );
+        assertThat( ctx.k_cutype().getText(), is(paramName) );
+        assertThat( ctx.k_group().getText(), is(value) );
 
         value = "INDIVIDUAL";
         source = paramName + "=" + value;
@@ -89,8 +91,8 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.CUTYPE().getText(), is(paramName) );
-        assertThat( ctx.INDIVIDUAL().getText(), is(value) );
+        assertThat( ctx.k_cutype().getText(), is(paramName) );
+        assertThat( ctx.k_individual().getText(), is(value) );
     }
 
     @Test
@@ -110,7 +112,7 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.DELEGATED_FROM().getText(), is(paramName) );
+        assertThat( ctx.k_delegated_from().getText(), is(paramName) );
         assertThat( ctx.cal_address().size(), is(2) );
         assertThat( ctx.cal_address().get(0).getText(), is(value1) );
         assertThat( ctx.cal_address().get(1).getText(), is(value2) );
@@ -133,7 +135,7 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.DELEGATED_TO().getText(), is(paramName) );
+        assertThat( ctx.k_delegated_to().getText(), is(paramName) );
         assertThat( ctx.cal_address().size(), is(2) );
         assertThat( ctx.cal_address().get(0).getText(), is(value1) );
         assertThat( ctx.cal_address().get(1).getText(), is(value2) );
@@ -155,7 +157,7 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.DIR().getText(), is(paramName) );
+        assertThat( ctx.k_dir().getText(), is(paramName) );
         assertThat( ctx.uri().getText(), is(value) );
     }
 
@@ -178,8 +180,8 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.ENCODING().getText(), is(paramName) );
-        assertThat( ctx.BIT().getText(), is(value.replaceAll("\\d", "")) );
+        assertThat( ctx.k_encoding().getText(), is(paramName) );
+        assertThat( ctx.k_bit().getText(), is(value.replaceAll("\\d", "")) );
 
         value = "Base64";
 
@@ -189,8 +191,8 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.ENCODING().getText(), is(paramName) );
-        assertThat( ctx.BASE().getText(), is(value.replaceAll("\\d", "")) );
+        assertThat( ctx.k_encoding().getText(), is(paramName) );
+        assertThat( ctx.k_base().getText(), is(value.replaceAll("\\d", "")) );
     }
 
     @Test
@@ -210,7 +212,7 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.FMTTYPE().getText(), is(paramName) );
+        assertThat( ctx.k_fmttype().getText(), is(paramName) );
         assertThat( ctx.type_name().getText(), is(value1) );
         assertThat( ctx.subtype_name().getText(), is(value2) );
     }
@@ -237,8 +239,8 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.FBTYPE().getText(), is(paramName) );
-        assertThat( ctx.BUSY_UNAVAILABLE().getText(), is(value) );
+        assertThat( ctx.k_fbtype().getText(), is(paramName) );
+        assertThat( ctx.k_busy_unavailable().getText(), is(value) );
 
         value = "FREE";
         source = paramName + "=" + value;
@@ -247,8 +249,8 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.FBTYPE().getText(), is(paramName) );
-        assertThat( ctx.FREE().getText(), is(value) );
+        assertThat( ctx.k_fbtype().getText(), is(paramName) );
+        assertThat( ctx.k_free().getText(), is(value) );
     }
 
     @Test
@@ -267,7 +269,7 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.LANGUAGE().getText(), is(paramName) );
+        assertThat( ctx.k_language().getText(), is(paramName) );
         assertThat( ctx.language().getText(), is(value) );
     }
 
@@ -288,7 +290,7 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.MEMBER().getText(), is(paramName) );
+        assertThat( ctx.k_member().getText(), is(paramName) );
         assertThat( ctx.cal_address().size(), is(2) );
         assertThat( ctx.cal_address().get(0).getText(), is(value1) );
         assertThat( ctx.cal_address().get(1).getText(), is(value2) );
@@ -313,7 +315,7 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.PARTSTAT().getText(), is(paramName) );
+        assertThat( ctx.k_partstat().getText(), is(paramName) );
         assertThat( ctx.partstat_event().getText(), is(value) );
     }
 
@@ -333,8 +335,8 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.RANGE().getText(), is(paramName) );
-        assertThat( ctx.THISANDFUTURE().getText(), is(value) );
+        assertThat( ctx.k_range().getText(), is(paramName) );
+        assertThat( ctx.k_thisandfuture().getText(), is(value) );
     }
 
     @Test
@@ -355,8 +357,8 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.RELATED().getText(), is(paramName) );
-        assertThat( ctx.END().getText(), is(value) );
+        assertThat( ctx.k_related().getText(), is(paramName) );
+        assertThat( ctx.k_end().getText(), is(value) );
     }
 
     @Test
@@ -379,9 +381,8 @@ public class ICalendarParserTest {
         ICalendarParser.ReltypeparamContext ctx = getParser(source).reltypeparam();
 
         assertThat( ctx.getText(), is(source) );
-
-        assertThat( ctx.RELTYPE().getText(), is(paramName) );
-        assertThat( ctx.X_NAME().getText(), is(value) );
+        assertThat( ctx.k_reltype().getText(), is(paramName) );
+        assertThat( ctx.x_name().getText(), is(value) );
     }
 
     @Test
@@ -406,7 +407,7 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.ROLE().getText(), is(paramName) );
+        assertThat( ctx.k_role().getText(), is(paramName) );
         assertThat( ctx.iana_token().getText(), is(value) );
     }
 
@@ -429,8 +430,8 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.RSVP().getText(), is(paramName) );
-        assertThat( ctx.TRUE().getText(), is(value) );
+        assertThat( ctx.k_rsvp().getText(), is(paramName) );
+        assertThat( ctx.k_true().getText(), is(value) );
     }
 
     @Test
@@ -449,7 +450,7 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.SENT_BY().getText(), is(paramName) );
+        assertThat( ctx.k_sent_by().getText(), is(paramName) );
         assertThat( ctx.cal_address().getText(), is(value) );
     }
 
@@ -469,7 +470,7 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.TZID().getText(), is(paramName) );
+        assertThat( ctx.k_tzid().getText(), is(paramName) );
         assertThat( ctx.paramtext().getText(), is(value) );
     }
 
@@ -489,7 +490,7 @@ public class ICalendarParserTest {
 
         assertThat( ctx.getText(), is(source) );
 
-        assertThat( ctx.VALUE().getText(), is(paramName) );
+        assertThat( ctx.k_value().getText(), is(paramName) );
         assertThat( ctx.valuetype().getText(), is(value) );
     }
 
@@ -533,7 +534,7 @@ public class ICalendarParserTest {
 
         ICalendarParser.BoolContext ctx = getParser(source).bool();
 
-        assertThat( ctx.TRUE().getText(), is(source) );
+        assertThat( ctx.k_true().getText(), is(source) );
     }
 
     @Test
@@ -1192,8 +1193,8 @@ public class ICalendarParserTest {
         String source = "CALSCALE:GREGORIAN\n";
 
         ICalendarParser.CalscaleContext ctx = getParser(source).calscale();
-        assertThat(ctx.CALSCALE().getText(), is("CALSCALE"));
-        assertThat( ctx.GREGORIAN().getText(), is("GREGORIAN") );
+        assertThat(ctx.k_calscale().getText(), is("CALSCALE"));
+        assertThat( ctx.k_gregorian().getText(), is("GREGORIAN") );
     }
 
     @Test
@@ -1207,7 +1208,7 @@ public class ICalendarParserTest {
         String source = "METHOD:REQUEST\n";
 
         ICalendarParser.MethodContext ctx = getParser(source).method();
-        assertThat( ctx.METHOD().getText(), is("METHOD") );
+        assertThat( ctx.k_method().getText(), is("METHOD") );
         assertThat( ctx.iana_token().getText(), is("REQUEST") );
     }
 
@@ -1222,7 +1223,7 @@ public class ICalendarParserTest {
         String source = "PRODID:-//ABC Corporation//NONSGML My Product//EN\n";
 
         ICalendarParser.ProdidContext ctx = getParser(source).prodid();
-        assertThat( ctx.PRODID().getText(), is("PRODID") );
+        assertThat( ctx.k_prodid().getText(), is("PRODID") );
         assertThat( ctx.text().getText(), is("-//ABC Corporation//NONSGML My Product//EN") );
     }
 
@@ -1237,13 +1238,13 @@ public class ICalendarParserTest {
         String source = "VERSION:2.0\n";
 
         ICalendarParser.VersionContext ctx = getParser(source).version();
-        assertThat( ctx.VERSION().getText(), is("VERSION") );
+        assertThat( ctx.k_version().getText(), is("VERSION") );
         assertThat( ctx.vervalue().maxver().getText(), is("2.0") );
 
         source = "VERSION:1.1;2.2\n";
 
         ctx = getParser(source).version();
-        assertThat( ctx.VERSION().getText(), is("VERSION") );
+        assertThat( ctx.k_version().getText(), is("VERSION") );
         assertThat( ctx.vervalue().minver().getText(), is("1.1") );
         assertThat( ctx.vervalue().maxver().getText(), is("2.2") );
     }
@@ -1262,14 +1263,14 @@ public class ICalendarParserTest {
         String source = "ATTACH:CID:jsmith.part3.960817T083000.xyzMail@example.com\n";
 
         ICalendarParser.AttachContext ctx = getParser(source).attach();
-        assertThat( ctx.ATTACH().getText(), is("ATTACH") );
+        assertThat( ctx.k_attach().getText(), is("ATTACH") );
         assertThat( ctx.uri().getText(), is("CID:jsmith.part3.960817T083000.xyzMail@example.com") );
 
         source = "ATTACH;FMTTYPE=application/postscript:ftp://example.com/pub/\n" +
                 " reports/r-960812.ps\n";
 
         ctx = getParser(source).attach();
-        assertThat( ctx.ATTACH().getText(), is("ATTACH") );
+        assertThat( ctx.k_attach().getText(), is("ATTACH") );
         assertThat( ctx.attachparam().size(), is(1) );
         assertThat( ctx.attachparam(0).fmttypeparam().getText(), is("FMTTYPE=application/postscript") );
         assertThat( ctx.uri().getText(), is("ftp://example.com/pub/reports/r-960812.ps") );
@@ -1286,14 +1287,14 @@ public class ICalendarParserTest {
         String source = "CATEGORIES:MEETING\n";
 
         ICalendarParser.CategoriesContext ctx = getParser(source).categories();
-        assertThat( ctx.CATEGORIES().getText(), is("CATEGORIES") );
+        assertThat( ctx.k_categories().getText(), is("CATEGORIES") );
         assertThat( ctx.text().size(), is(1) );
         assertThat( ctx.text(0).getText(), is("MEETING") );
 
         source = "CATEGORIES:APPOINTMENT,EDUCATION\n";
 
         ctx = getParser(source).categories();
-        assertThat( ctx.CATEGORIES().getText(), is("CATEGORIES") );
+        assertThat( ctx.k_categories().getText(), is("CATEGORIES") );
         assertThat( ctx.text().size(), is(2) );
         assertThat( ctx.text(0).getText(), is("APPOINTMENT") );
         assertThat( ctx.text(1).getText(), is("EDUCATION") );
@@ -1310,7 +1311,7 @@ public class ICalendarParserTest {
         String source = "CLASS:PUBLIC\n";
 
         ICalendarParser.ClazzContext ctx = getParser(source).clazz();
-        assertThat( ctx.CLASS().getText(), is("CLASS") );
+        assertThat( ctx.k_class().getText(), is("CLASS") );
         assertThat( ctx.classvalue().getText(), is("PUBLIC") );
     }
 
@@ -1330,7 +1331,7 @@ public class ICalendarParserTest {
         String source = "COMMENT:" + comment + "\n";
 
         ICalendarParser.CommentContext ctx = getParser(source).comment();
-        assertThat( ctx.COMMENT().getText(), is("COMMENT") );
+        assertThat( ctx.k_comment().getText(), is("COMMENT") );
         assertThat( ctx.text().getText(), is(comment.replace("\n ", "")) );
     }
 
@@ -1350,7 +1351,7 @@ public class ICalendarParserTest {
 
         ICalendarParser.DescriptionContext ctx = getParser(source).description();
 
-        assertThat( ctx.DESCRIPTION().getText(), is("DESCRIPTION") );
+        assertThat( ctx.k_description().getText(), is("DESCRIPTION") );
         assertThat( ctx.text().getText(), is(description.replace("\n ", "")) );
     }
 
@@ -1366,7 +1367,7 @@ public class ICalendarParserTest {
 
         ICalendarParser.GeoContext ctx = getParser(source).geo();
 
-        assertThat( ctx.GEO().getText(), is("GEO") );
+        assertThat( ctx.k_geo().getText(), is("GEO") );
 
         assertThat( ctx.geovalue().float_num().size(), is(2) );
 
@@ -1386,7 +1387,7 @@ public class ICalendarParserTest {
 
         ICalendarParser.LocationContext ctx = getParser(source).location();
 
-        assertThat( ctx.LOCATION().getText(), is("LOCATION") );
+        assertThat( ctx.k_location().getText(), is("LOCATION") );
         assertThat( ctx.text().getText(), is("Conference Room - F123\\, Bldg. 002") );
 
         source = "LOCATION;ALTREP=\"http://xyzcorp.com/conf-rooms/f123.vcf\":\n" +
@@ -1394,12 +1395,13 @@ public class ICalendarParserTest {
 
         ctx = getParser(source).location();
 
-        assertThat( ctx.LOCATION().getText(), is("LOCATION") );
+        assertThat( ctx.k_location().getText(), is("LOCATION") );
         assertThat( ctx.locparam().size(), is(1) );
         assertThat( ctx.locparam(0).altrepparam().uri().getText(), is("http://xyzcorp.com/conf-rooms/f123.vcf") );
         assertThat( ctx.text().getText(), is("Conference Room - F123\\, Bldg. 002") );
     }
 
+    /*
     @Test
     public void percentTest() {
 
@@ -1476,6 +1478,7 @@ public class ICalendarParserTest {
 
         // TODO
     }
+    */
 
     /*
     @Test
