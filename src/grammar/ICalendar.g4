@@ -101,14 +101,16 @@ value
 // 3.6.1 - Event Component
 eventc
  : BEGIN ':' VEVENT CRLF
-   eventprop* alarmc*
+   eventprop* 
+   alarmc*
    END ':' VEVENT CRLF
  ;
 
 // 3.6.2 - To-Do Component
 todoc
  : BEGIN ':' VTODO CRLF
-   todoprop* alarmc*
+   todoprop* 
+   alarmc*
    END ':' VTODO CRLF
  ;
 
@@ -148,7 +150,7 @@ daylightc
 // 3.6.6 - Alarm Component
 alarmc
  : BEGIN ':' VALARM CRLF
-   alarmprop?
+   alarmprop+
    END ':' VALARM CRLF
  ;
 
@@ -290,32 +292,6 @@ tzprop
  ;
 
 alarmprop
- : audioprop+
- | dispprop+
- | emailprop+
- ;
-
-audioprop
- : action
- | trigger
- | duration
- | repeat
- | attach
- | x_prop
- | iana_prop
- ;
-
-dispprop
- : action
- | description
- | trigger
- | duration
- | repeat
- | x_prop
- | iana_prop
- ;
-
-emailprop
  : action
  | description
  | trigger
@@ -783,7 +759,7 @@ quoted_string
   
 // iCalendar identifier registered with IANA
 iana_token
- : alpha+
+ : (alpha | '-')+
  ;
 
 // 3.2
@@ -965,7 +941,15 @@ valuetype
 
 // 3.3.1 - A "BASE64" encoded character string, as defined by [RFC4648].
 binary
- : (b_char b_char b_char b_char)* b_end?
+ : b_chars b_end?
+ ;
+
+b_chars
+ : b_char*
+ ;
+
+b_end
+ : '=' '='?
  ;
 
 // 3.3.2
@@ -989,22 +973,26 @@ date_time
  : date K_T time
  ;
 
-// 3.3.6
+// 3.3.6 
 dur_value
- : '-' K_P (dur_date | dur_time | dur_week)
- | '+'? K_P (dur_date | dur_time | dur_week)
+ : '-' (K_P | NON_KEYWORD) (dur_date | dur_time | dur_week)
+ | '+'? (K_P | NON_KEYWORD) (dur_date | dur_time | dur_week)
  ;
 
 // 3.3.7
 float_num
- : '-' digit+ ('.' digit+)?
- | '+'? digit+ ('.' digit+)?
+ : '-' digits ('.' digits)?
+ | '+'? digits ('.' digits)?
+ ;
+
+digits
+ : digit+
  ;
 
 // 3.3.8
 integer
- : '-' digit+
- | '+'? digit+
+ : '-' digits
+ | '+'? digits
  ;
 
 // 3.3.9
@@ -1020,7 +1008,7 @@ recur
 
 // 3.3.11
 text
- : (tsafe_char | ':' | '"' | escaped_char)*
+ : (tsafe_char | ':' | '"' | ESCAPED_CHAR)*
  ;
 
 // 3.3.12
@@ -1058,6 +1046,7 @@ x_param
 // As defined in Section 4.2 of [RFC4288].
 type_name
  : reg_name
+ | keyword
  ;
 
 // As defined in Section 4.2 of [RFC4288].
@@ -1113,11 +1102,6 @@ b_char
  | '/'
  ;
 
-b_end
- : b_char b_char '=' '='
- | b_char b_char b_char '='
- ;
-
 date_value
  : date_fullyear date_month date_mday
  ;
@@ -1146,20 +1130,22 @@ time_second
  : digits_2
  ;
 
+// "DT" is tokenized as a NON_KEYWORD, check if NON_KEYWORD=="DT"
 dur_date
- : dur_day dur_time?
- ;
-
-dur_time
- : K_T (dur_hour | dur_minute | dur_second)
- ;
-
-dur_week
- : digit+ K_W
+ : digit+ NON_KEYWORD (dur_hour | dur_minute | dur_second)
+ | digit+ K_D
  ;
 
 dur_day
  : digit+ K_D
+ ;
+
+dur_time
+ : K_T? (dur_hour | dur_minute | dur_second)
+ ;
+
+dur_week
+ : digit+ K_W
  ;
 
 dur_hour
@@ -1167,7 +1153,7 @@ dur_hour
  ;
 
 dur_minute
- : digit+ K_M dur_second
+ : digit+ K_M dur_second?
  ;
 
 dur_second
@@ -1443,13 +1429,6 @@ tsafe_char
  | WSP
  ;
 
-escaped_char
- : '\\' '\\'
- | '\\' ';'
- | '\\' ','
- | '\\' K_N
- ;
-
 time_numzone
  : ('+' | '-') time_hour time_minute time_second?
  ;
@@ -1473,6 +1452,7 @@ language_char
  | digit
  | '-'
  | ':'
+ | WSP
  ;
 
 keyword
@@ -1844,7 +1824,7 @@ YEARLY : Y E A R L Y;
 
 // Reserved for experimental use.
 X_NAME
- : 'X-' ([a-zA-Z0-9] [a-zA-Z0-9] [a-zA-Z0-9]+ '-')? [a-zA-Z-]+
+ : X ([a-zA-Z0-9] [a-zA-Z0-9] [a-zA-Z0-9]+ '-')? [a-zA-Z-]+
  ;
 
 NON_KEYWORD
@@ -1858,6 +1838,13 @@ LINE_FOLD
 WSP
  : ' '
  | '\t'
+ ;
+
+ESCAPED_CHAR
+ : '\\' '\\'
+ | '\\' ';'
+ | '\\' ','
+ | '\\' K_N
  ;
 
 CRLF
