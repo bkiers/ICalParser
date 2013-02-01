@@ -639,7 +639,7 @@ exdtparam
 
 // 3.8.5.2 - Recurrence Date-Times
 rdate
- : k_rdate rdtparam* COL date_time_date (COMMA date_time_date)* CRLF
+ : k_rdate rdtparam* COL rdtval (COMMA rdtval)* CRLF
  ;
 
 rdtparam
@@ -648,6 +648,12 @@ rdtparam
  | SCOL k_value ASSIGN k_period
  | SCOL tzidparam
  | SCOL other_param
+ ;
+
+rdtval
+ : date_time
+ | date
+ | period
  ;
 
 date_time_date
@@ -1167,8 +1173,8 @@ period_start
 recur_rule_part
  : k_freq ASSIGN freq
  | k_until ASSIGN enddate
- | k_count ASSIGN digit+
- | k_interval ASSIGN digit+
+ | k_count ASSIGN digits
+ | k_interval ASSIGN digits
  | k_bysecond ASSIGN byseclist
  | k_byminute ASSIGN byminlist
  | k_byhour ASSIGN byhrlist

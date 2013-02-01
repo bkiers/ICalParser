@@ -1,9 +1,7 @@
 package horai.parser;
 
-import horai.util.Debug;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Token;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -16,6 +14,180 @@ public class ICalendarParserTest {
         return new ICalendarParser(new CommonTokenStream(lexer));
     }
 
+    @Test
+    public void testIcalobject() {
+
+        // icalobject
+        //  : k_begin COL k_vcalendar CRLF
+        //    icalbody
+        //    k_end COL k_vcalendar CRLF
+        //  ;
+        //
+        // icalbody
+        //  : calprop*? component+?
+        //  ;
+
+        String source = "BEGIN:VCALENDAR\n" +
+                "PRODID:-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN\n" +
+                "VERSION:2.0\n" +
+                "BEGIN:VEVENT\n" +
+                "DTSTAMP:19960704T120000Z\n" +
+                "UID:uid1@example.com\n" +
+                "ORGANIZER:mailto:jsmith@example.com\n" +
+                "DTSTART:19960918T143000Z\n" +
+                "DTEND:19960920T220000Z\n" +
+                "STATUS:CONFIRMED\n" +
+                "CATEGORIES:CONFERENCE\n" +
+                "SUMMARY:Networld+Interop Conference\n" +
+                "DESCRIPTION:Networld+Interop Conference\n" +
+                " and Exhibit\\nAtlanta World Congress Center\\n\n" +
+                " Atlanta\\, Georgia\n" +
+                "END:VEVENT\n" +
+                "END:VCALENDAR\n";
+        ICalendarParser.IcalobjectContext ctx = getParser(source).icalobject();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+        assertThat( ctx.icalbody().calprop().size(), is(2) );
+        assertThat( ctx.icalbody().component().size(), is(1) );
+
+        source = "BEGIN:VCALENDAR\n" +
+                "PRODID:-//RDU Software//NONSGML HandCal//EN\n" +
+                "VERSION:2.0\n" +
+                "BEGIN:VTIMEZONE\n" +
+                "TZID:America/New_York\n" +
+                "BEGIN:STANDARD\n" +
+                "DTSTART:19981025T020000\n" +
+                "TZOFFSETFROM:-0400\n" +
+                "TZOFFSETTO:-0500\n" +
+                "TZNAME:EST\n" +
+                "END:STANDARD\n" +
+                "BEGIN:DAYLIGHT\n" +
+                "DTSTART:19990404T020000\n" +
+                "TZOFFSETFROM:-0500\n" +
+                "TZOFFSETTO:-0400\n" +
+                "TZNAME:EDT\n" +
+                "END:DAYLIGHT\n" +
+                "END:VTIMEZONE\n" +
+                "BEGIN:VEVENT\n" +
+                "DTSTAMP:19980309T231000Z\n" +
+                "UID:guid-1.example.com\n" +
+                "ORGANIZER:mailto:mrbig@example.com\n" +
+                "ATTENDEE;RSVP=TRUE;ROLE=REQ-PARTICIPANT;CUTYPE=GROUP:\n" +
+                " mailto:employee-A@example.com\n" +
+                "DESCRIPTION:Project XYZ Review Meeting\n" +
+                "CATEGORIES:MEETING\n" +
+                "CLASS:PUBLIC\n" +
+                "CREATED:19980309T130000Z\n" +
+                "SUMMARY:XYZ Project Review\n" +
+                "DTSTART;TZID=America/New_York:19980312T083000\n" +
+                "DTEND;TZID=America/New_York:19980312T093000\n" +
+                "LOCATION:1CP Conference Room 4350\n" +
+                "END:VEVENT\n" +
+                "END:VCALENDAR\n";
+        ctx = getParser(source).icalobject();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+        assertThat( ctx.icalbody().calprop().size(), is(2) );
+        assertThat( ctx.icalbody().component().size(), is(2) );
+
+        source = "BEGIN:VCALENDAR\n" +
+                "METHOD:xyz\n" +
+                "VERSION:2.0\n" +
+                "PRODID:-//ABC Corporation//NONSGML My Product//EN\n" +
+                "BEGIN:VEVENT\n" +
+                "DTSTAMP:19970324T120000Z\n" +
+                "SEQUENCE:0\n" +
+                "UID:uid3@example.com\n" +
+                "ORGANIZER:mailto:jdoe@example.com\n" +
+                "ATTENDEE;RSVP=TRUE:mailto:jsmith@example.com\n" +
+                "DTSTART:19970324T123000Z\n" +
+                "DTEND:19970324T210000Z\n" +
+                "CATEGORIES:MEETING,PROJECT\n" +
+                "CLASS:PUBLIC\n" +
+                "SUMMARY:Calendaring Interoperability Planning Meeting\n" +
+                "DESCRIPTION:Discuss how we can test c&s interoperability\\n\n" +
+                " using iCalendar and other IETF standards.\n" +
+                "LOCATION:LDB Lobby\n" +
+                "ATTACH;FMTTYPE=application/postscript:ftp://example.com/pub/\n" +
+                " conf/bkgrnd.ps\n" +
+                "END:VEVENT\n" +
+                "END:VCALENDAR\n";
+        ctx = getParser(source).icalobject();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+        assertThat( ctx.icalbody().calprop().size(), is(3) );
+        assertThat( ctx.icalbody().component().size(), is(1) );
+
+        source = "BEGIN:VCALENDAR\n" +
+                "VERSION:2.0\n" +
+                "PRODID:-//ABC Corporation//NONSGML My Product//EN\n" +
+                "BEGIN:VTODO\n" +
+                "DTSTAMP:19980130T134500Z\n" +
+                "SEQUENCE:2\n" +
+                "UID:uid4@example.com\n" +
+                "ORGANIZER:mailto:unclesam@example.com\n" +
+                "ATTENDEE;PARTSTAT=ACCEPTED:mailto:jqpublic@example.com\n" +
+                "DUE:19980415T000000\n" +
+                "STATUS:NEEDS-ACTION\n" +
+                "SUMMARY:Submit Income Taxes\n" +
+                "BEGIN:VALARM\n" +
+                "ACTION:AUDIO\n" +
+                "TRIGGER:19980403T120000Z\n" +
+                "ATTACH;FMTTYPE=audio/basic:http://example.com/pub/audio-\n" +
+                " files/ssbanner.aud\n" +
+                "REPEAT:4\n" +
+                "DURATION:PT1H\n" +
+                "END:VALARM\n" +
+                "END:VTODO\n" +
+                "END:VCALENDAR\n";
+        ctx = getParser(source).icalobject();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+        assertThat( ctx.icalbody().calprop().size(), is(2) );
+        assertThat( ctx.icalbody().component().size(), is(1) );
+
+        source = "BEGIN:VCALENDAR\n" +
+                "VERSION:2.0\n" +
+                "PRODID:-//ABC Corporation//NONSGML My Product//EN\n" +
+                "BEGIN:VJOURNAL\n" +
+                "DTSTAMP:19970324T120000Z\n" +
+                "UID:uid5@example.com\n" +
+                "ORGANIZER:mailto:jsmith@example.com\n" +
+                "STATUS:DRAFT\n" +
+                "CLASS:PUBLIC\n" +
+                "CATEGORIES:Project Report,XYZ,Weekly Meeting\n" +
+                "DESCRIPTION:Project xyz Review Meeting Minutes\\n\n" +
+                " Agenda\\n1. Review of project version 1.0 requirements.\\n2.\n" +
+                "  Definition\n" +
+                " of project processes.\\n3. Review of project schedule.\\n\n" +
+                " Participants: John Smith\\, Jane Doe\\, Jim Dandy\\n-It was\n" +
+                "  decided that the requirements need to be signed off by\n" +
+                "  product marketing.\\n-Project processes were accepted.\\n\n" +
+                " -Project schedule needs to account for scheduled holidays\n" +
+                "  and employee vacation time. Check with HR for specific\n" +
+                "  dates.\\n-New schedule will be distributed by Friday.\\n-\n" +
+                " Next weeks meeting is cancelled. No meeting until 3/23.\n" +
+                "END:VJOURNAL\n" +
+                "END:VCALENDAR\n";
+        ctx = getParser(source).icalobject();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+        assertThat( ctx.icalbody().calprop().size(), is(2) );
+        assertThat( ctx.icalbody().component().size(), is(1) );
+
+        source = "BEGIN:VCALENDAR\n" +
+                "VERSION:2.0\n" +
+                "PRODID:-//RDU Software//NONSGML HandCal//EN\n" +
+                "BEGIN:VFREEBUSY\n" +
+                "ORGANIZER:mailto:jsmith@example.com\n" +
+                "DTSTART:19980313T141711Z\n" +
+                "DTEND:19980410T141711Z\n" +
+                "FREEBUSY:19980314T233000Z/19980315T003000Z\n" +
+                "FREEBUSY:19980316T153000Z/19980316T163000Z\n" +
+                "FREEBUSY:19980318T030000Z/19980318T040000Z\n" +
+                "URL:http://www.example.com/calendar/busytime/jsmith.ifb\n" +
+                "END:VFREEBUSY\n" +
+                "END:VCALENDAR\n";
+        ctx = getParser(source).icalobject();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+        assertThat( ctx.icalbody().calprop().size(), is(2) );
+        assertThat( ctx.icalbody().component().size(), is(1) );
+    }
 
     @Test
     public void altrepparamTest() {
@@ -531,9 +703,7 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "trUe";
-
         ICalendarParser.BoolContext ctx = getParser(source).bool();
-
         assertThat( ctx.k_true().getText(), is(source) );
     }
 
@@ -546,9 +716,7 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "mailto:jane_doe@example.com";
-
         ICalendarParser.Cal_addressContext ctx = getParser(source).cal_address();
-
         assertThat( ctx.uri().getText(), is(source) );
     }
 
@@ -561,9 +729,7 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "19970714";
-
         ICalendarParser.DateContext ctx = getParser(source).date();
-
         assertThat( ctx.date_value().getText(), is(source) );
     }
 
@@ -578,9 +744,7 @@ public class ICalendarParserTest {
         String date = "19980118";
         String time = "230000";
         String source = date + "t" + time;
-
         ICalendarParser.Date_timeContext ctx = getParser(source).date_time();
-
         assertThat( ctx.date().getText(), is(date) );
         assertThat( ctx.time().getText(), is(time) );
     }
@@ -596,16 +760,12 @@ public class ICalendarParserTest {
 
         String date = "15DT5H0M20S";
         String source = "+P" + date;
-
         ICalendarParser.Dur_valueContext ctx = getParser(source).dur_value();
-
         assertThat( ctx.dur_date().getText(), is(date) );
 
         String weeks = "7w";
         source = "P" + weeks;
-
         ctx = getParser(source).dur_value();
-
         assertThat( ctx.dur_week().getText(), is(weeks) );
     }
 
@@ -619,16 +779,12 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "123.45";
-
         ICalendarParser.Float_numContext ctx = getParser(source).float_num();
-
         assertThat( ctx.digits().get(0).getText(), is("123") );
         assertThat( ctx.digits().get(1).getText(), is("45") );
 
         source = "-42";
-
         ctx = getParser(source).float_num();
-
         assertThat( ctx.digits().get(0).getText(), is("42") );
     }
 
@@ -642,9 +798,7 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "+123";
-
         ICalendarParser.IntegerContext ctx = getParser(source).integer();
-
         assertThat( ctx.digits().getText(), is("123") );
     }
 
@@ -658,15 +812,11 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "19970101T180000Z/19970102T070000Z";
-
         ICalendarParser.PeriodContext ctx = getParser(source).period();
-
         assertThat( ctx.period_explicit().getText(), is(source) );
 
         source = "19970101T180000Z/PT5H30M";
-
         ctx = getParser(source).period();
-
         assertThat( ctx.period_start().getText(), is(source) );
     }
 
@@ -699,9 +849,7 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "Project XYZ Final Review\\nConference Room - 3B\\nCome Prepared.";
-
         ICalendarParser.TextContext ctx = getParser(source).text();
-
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -745,9 +893,7 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "http://example.com/my-report.txt";
-
         ICalendarParser.UriContext ctx = getParser(source).uri();
-
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -1503,9 +1649,7 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "COMPLETED:19960401T150000Z\n";
-
         ICalendarParser.CompletedContext ctx = getParser(source).completed();
-
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -1518,15 +1662,11 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "DTEND:19960401T150000Z\n";
-
         ICalendarParser.DtendContext ctx = getParser(source).dtend();
-
         assertThat( ctx.getText(), is(source) );
 
         source = "DTEND;VALUE=DATE:19980704\n";
-
         ctx = getParser(source).dtend();
-
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -1539,9 +1679,7 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "DUE:19980430T000000Z\n";
-
         ICalendarParser.DueContext ctx = getParser(source).due();
-
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -1554,9 +1692,7 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "DTSTART:19980118T073000Z\n";
-
         ICalendarParser.DtstartContext ctx = getParser(source).dtstart();
-
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -1569,15 +1705,11 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "DURATION:PT1H0M0S\n";
-
         ICalendarParser.DurationContext ctx = getParser(source).duration();
-
         assertThat( ctx.getText(), is(source) );
 
         source = "DURATION:PT15M\n";
-
         ctx = getParser(source).duration();
-
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -1590,22 +1722,16 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "FREEBUSY;FBTYPE=BUSY-UNAVAILABLE:19970308T160000Z/PT8H30M\n";
-
         ICalendarParser.FreebusyContext ctx = getParser(source).freebusy();
-
         assertThat( ctx.getText(), is(source) );
 
         source = "FREEBUSY;FBTYPE=FREE:19970308T160000Z/PT3H,19970308T200000Z/PT1H\n";
-
         ctx = getParser(source).freebusy();
-
         assertThat( ctx.getText(), is(source) );
 
         source = "FREEBUSY;FBTYPE=FREE:19970308T160000Z/PT3H,19970308T200000Z/PT1H\n" +
                 " ,19970308T230000Z/19970309T000000Z\n";
-
         ctx = getParser(source).freebusy();
-
         assertThat( ctx.getText(), is(source.replace("\n ", "")) );
     }
 
@@ -1618,9 +1744,7 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "TRANSP:TRANSPARENT\n";
-
         ICalendarParser.TranspContext ctx = getParser(source).transp();
-
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -1633,15 +1757,11 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "TZID:America/New_York\n";
-
         ICalendarParser.TzidContext ctx = getParser(source).tzid();
-
         assertThat( ctx.getText(), is(source) );
 
         source = "TZID:/example.org/America/New_York\n";
-
         ctx = getParser(source).tzid();
-
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -1654,15 +1774,11 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "TZNAME:EST\n";
-
         ICalendarParser.TznameContext ctx = getParser(source).tzname();
-
         assertThat( ctx.getText(), is(source) );
 
         source = "TZNAME;LANGUAGE=fr-CA:HNE\n";
-
         ctx = getParser(source).tzname();
-
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -1675,15 +1791,11 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "TZOFFSETFROM:-0500\n";
-
         ICalendarParser.TzoffsetfromContext ctx = getParser(source).tzoffsetfrom();
-
         assertThat( ctx.getText(), is(source) );
 
         source = "TZOFFSETFROM:+1345\n";
-
         ctx = getParser(source).tzoffsetfrom();
-
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -1696,15 +1808,11 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "TZOFFSETTO:-0400\n";
-
         ICalendarParser.TzoffsettoContext ctx = getParser(source).tzoffsetto();
-
         assertThat( ctx.getText(), is(source) );
 
         source = "TZOFFSETTO:+1245\n";
-
         ctx = getParser(source).tzoffsetto();
-
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -1717,9 +1825,7 @@ public class ICalendarParserTest {
         //  ;
 
         String source = "TZURL:http://timezones.example.org/tz/America-Los_Angeles.ics\n";
-
         ICalendarParser.TzurlContext ctx = getParser(source).tzurl();
-
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -1911,7 +2017,7 @@ public class ICalendarParserTest {
 
         // 3.8.5.2 - Recurrence Date-Times
         // rdate
-        //  : k_rdate rdtparam* COL date_time_date (COMMA date_time_date)* CRLF
+        //  : k_rdate rdtparam* COL rdtval (COMMA rdtval)* CRLF
         //  ;
 
         String source = "RDATE:19970714T123000Z\n";
@@ -1925,13 +2031,12 @@ public class ICalendarParserTest {
         source = "RDATE;VALUE=PERIOD:19960403T020000Z/19960403T040000Z,\n" +
                 " 19960404T010000Z/PT3H\n";
         ctx = getParser(source).rdate();
-        assertThat( ctx.getText(), is(source) );
-        /*
-        source = "RDATE;VALUE=DATE:19970101,19970120,19970217,19970421\n" +
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+
+        source = "RDATE;VALUE=DATE:19970101,19970120,19970217,19970421,\n" +
                 " 19970526,19970704,19970901,19971014,19971128,19971129,19971225\n";
         ctx = getParser(source).rdate();
-        assertThat( ctx.getText(), is(source) );
-        */
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
     }
 
     @Test
@@ -1942,10 +2047,180 @@ public class ICalendarParserTest {
         //  : k_rrule (SCOL other_param)* COL recur CRLF
         //  ;
 
-        String source = "";
-
+        String source = "RRULE:FREQ=DAILY;COUNT=10\n";
         ICalendarParser.RruleContext ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
 
+        source = "RRULE:FREQ=DAILY;UNTIL=19971224T000000Z\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=DAILY;INTERVAL=2\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=DAILY;INTERVAL=10;COUNT=5\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=YEARLY;UNTIL=20000131T140000Z;\n" +
+                " BYMONTH=1;BYDAY=SU,MO,TU,WE,TH,FR,SA\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+
+        source = "RRULE:FREQ=DAILY;UNTIL=20000131T140000Z;BYMONTH=1\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=WEEKLY;COUNT=10\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=WEEKLY;UNTIL=19971224T000000Z\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=WEEKLY;INTERVAL=2;WKST=SU\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=WEEKLY;UNTIL=19971007T000000Z;WKST=SU;BYDAY=TU,TH\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=WEEKLY;COUNT=10;WKST=SU;BYDAY=TU,TH\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=WEEKLY;INTERVAL=2;UNTIL=19971224T000000Z;WKST=SU;\n" +
+                " BYDAY=MO,WE,FR\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+
+        source = "RRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=8;WKST=SU;BYDAY=TU,TH\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=MONTHLY;COUNT=10;BYDAY=1FR\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=MONTHLY;UNTIL=19971224T000000Z;BYDAY=1FR\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=MONTHLY;INTERVAL=2;COUNT=10;BYDAY=1SU,-1SU\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=MONTHLY;COUNT=6;BYDAY=-2MO\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=MONTHLY;BYMONTHDAY=-3\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=MONTHLY;COUNT=10;BYMONTHDAY=2,15\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=MONTHLY;COUNT=10;BYMONTHDAY=1,-1\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=MONTHLY;INTERVAL=18;COUNT=10;BYMONTHDAY=10,11,12,13,14,15\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=MONTHLY;INTERVAL=2;BYDAY=TU\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=YEARLY;COUNT=10;BYMONTH=6,7\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=YEARLY;INTERVAL=2;COUNT=10;BYMONTH=1,2,3\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=YEARLY;INTERVAL=3;COUNT=10;BYYEARDAY=1,100,200\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=YEARLY;BYDAY=20MO\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=YEARLY;BYWEEKNO=20;BYDAY=MO\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=TH\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=YEARLY;BYDAY=TH;BYMONTH=6,7,8\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=MONTHLY;BYDAY=SA;BYMONTHDAY=7,8,9,10,11,12,13\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=YEARLY;INTERVAL=4;BYMONTH=11;BYDAY=TU;BYMONTHDAY=2,3,4,5,6,7,8\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+        assertThat( ctx.recur().recur_rule_part().size(), is(5) );
+        assertThat( ctx.recur().recur_rule_part(0).freq().getText(), is("YEARLY") );
+        assertThat( ctx.recur().recur_rule_part(1).digits().getText(), is("4") );
+        assertThat( ctx.recur().recur_rule_part(2).bymolist().getText(), is("11") );
+        assertThat( ctx.recur().recur_rule_part(3).bywdaylist().getText(), is("TU") );
+        assertThat( ctx.recur().recur_rule_part(4).bymodaylist().getText(), is("2,3,4,5,6,7,8") );
+
+        source = "RRULE:FREQ=MONTHLY;COUNT=3;BYDAY=TU,WE,TH;BYSETPOS=3\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-2\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=HOURLY;INTERVAL=3;UNTIL=19970902T170000Z\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=MINUTELY;INTERVAL=15;COUNT=6\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=MINUTELY;INTERVAL=90;COUNT=4\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=DAILY;BYHOUR=9,10,11,12,13,14,15,16;BYMINUTE=0,20,40\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=MINUTELY;INTERVAL=20;BYHOUR=9,10,11,12,13,14,15,16\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=MO\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=SU\n";
+        ctx = getParser(source).rrule();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RRULE:FREQ=MONTHLY;BYMONTHDAY=15,30;COUNT=5\n";
+        ctx = getParser(source).rrule();
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -1957,10 +2232,12 @@ public class ICalendarParserTest {
         //  : k_action (SCOL other_param)* COL actionvalue CRLF
         //  ;
 
-        String source = "";
-
+        String source = "ACTION:AUDIO\n";
         ICalendarParser.ActionContext ctx = getParser(source).action();
+        assertThat( ctx.getText(), is(source) );
 
+        source = "ACTION:DISPLAY\n";
+        ctx = getParser(source).action();
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -1972,10 +2249,8 @@ public class ICalendarParserTest {
         //  : k_repeat (SCOL other_param)* COL integer CRLF
         //  ;
 
-        String source = "";
-
+        String source = "REPEAT:4\n";
         ICalendarParser.RepeatContext ctx = getParser(source).repeat();
-
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -1988,10 +2263,16 @@ public class ICalendarParserTest {
         //  | k_trigger trigabs* COL date_time CRLF
         //  ;
 
-        String source = "";
-
+        String source = "TRIGGER:-PT15M\n";
         ICalendarParser.TriggerContext ctx = getParser(source).trigger();
+        assertThat( ctx.getText(), is(source) );
 
+        source = "TRIGGER;RELATED=END:PT5M\n";
+        ctx = getParser(source).trigger();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "TRIGGER;VALUE=DATE-TIME:19980101T050000Z\n";
+        ctx = getParser(source).trigger();
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -2003,10 +2284,8 @@ public class ICalendarParserTest {
         //  : k_created (SCOL other_param)* COL date_time CRLF
         //  ;
 
-        String source = "";
-
+        String source = "CREATED:19960329T133000Z\n";
         ICalendarParser.CreatedContext ctx = getParser(source).created();
-
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -2018,10 +2297,8 @@ public class ICalendarParserTest {
         //  : k_dtstamp (SCOL other_param)* COL date_time CRLF
         //  ;
 
-        String source = "";
-
+        String source = "\n";
         ICalendarParser.DtstampContext ctx = getParser(source).dtstamp();
-
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -2033,7 +2310,7 @@ public class ICalendarParserTest {
         //  : k_last_modified (SCOL other_param)* COL date_time CRLF
         //  ;
 
-        String source = "";
+        String source = "LAST-MODIFIED:19960817T133000Z\n";
 
         ICalendarParser.Last_modContext ctx = getParser(source).last_mod();
 
@@ -2048,10 +2325,16 @@ public class ICalendarParserTest {
         //  : k_sequence (SCOL other_param)* COL integer CRLF
         //  ;
 
-        String source = "";
-
+        String source = "SEQUENCE:0\n";
         ICalendarParser.SeqContext ctx = getParser(source).seq();
+        assertThat( ctx.getText(), is(source) );
 
+        source = "SEQUENCE:+999\n";
+        ctx = getParser(source).seq();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "SEQUENCE:-5\n";
+        ctx = getParser(source).seq();
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -2063,10 +2346,12 @@ public class ICalendarParserTest {
         //  : iana_token (SCOL icalparameter)* COL value CRLF
         //  ;
 
-        String source = "";
-
+        String source = "DRESSCODE:CASUAL\n";
         ICalendarParser.Iana_propContext ctx = getParser(source).iana_prop();
+        assertThat( ctx.getText(), is(source) );
 
+        source = "NON-SMOKING;VALUE=BOOLEAN:TRUE\n";
+        ctx = getParser(source).iana_prop();
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -2078,10 +2363,8 @@ public class ICalendarParserTest {
         //  : x_name (SCOL icalparameter)* COL value CRLF
         //  ;
 
-        String source = "";
-
+        String source = "X-ABC-MMSUBJ;VALUE=URI;FMTTYPE=audio/basic:http://www.example.org/mysubj.au\n";
         ICalendarParser.X_propContext ctx = getParser(source).x_prop();
-
         assertThat( ctx.getText(), is(source) );
     }
 
@@ -2093,20 +2376,27 @@ public class ICalendarParserTest {
         //  : k_request_status rstatparam* COL statcode SCOL text (SCOL text)?
         //  ;
 
-        String source = "";
-
+        String source = "REQUEST-STATUS:2.0;Success";
         ICalendarParser.RstatusContext ctx = getParser(source).rstatus();
-
         assertThat( ctx.getText(), is(source) );
-    }
 
-    /*
-    @Test
-    public void test() {
-        for(Token t : new ICalendarLexer(new ANTLRInputStream("19970101T180000Z/PT5H30M")).getAllTokens()) {
-            System.out.println(t);
-        }
+        source = "REQUEST-STATUS:3.1;Invalid property value;DTSTART:96-Apr-01";
+        ctx = getParser(source).rstatus();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "REQUEST-STATUS:2.8; Success\\, repeating event ignored. Scheduled\n" +
+                " as a single event.;RRULE:FREQ=WEEKLY\\;INTERVAL=2";
+        ctx = getParser(source).rstatus();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+
+        source = "REQUEST-STATUS:4.1;Event conflict.  Date-time is busy.";
+        ctx = getParser(source).rstatus();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "REQUEST-STATUS:3.7;Invalid calendar user;ATTENDEE:\n" +
+                " mailto:jsmith@example.com";
+        ctx = getParser(source).rstatus();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
     }
-    */
 }
 
