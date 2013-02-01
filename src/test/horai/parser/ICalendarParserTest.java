@@ -1433,7 +1433,7 @@ public class ICalendarParserTest {
         assertThat( ctx.priovalue().getText(), is("1") );
     }
 
-    /*@Test
+    @Test
     public void resourcesTest() {
 
         // 3.8.1.10 - Resources
@@ -1445,9 +1445,21 @@ public class ICalendarParserTest {
 
         ICalendarParser.ResourcesContext ctx = getParser(source).resources();
 
+        assertThat( ctx.k_resources().getText(), is("RESOURCES") );
+        assertThat( ctx.text().size(), is(3) );
+        assertThat( ctx.text(0).getText(), is("EASEL") );
+        assertThat( ctx.text(1).getText(), is("PROJECTOR") );
+        assertThat( ctx.text(2).getText(), is("VCR") );
+
         source = "RESOURCES;LANGUAGE=fr:Nettoyeur haute pression\n";
 
-        // TODO
+        ctx = getParser(source).resources();
+
+        assertThat( ctx.k_resources().getText(), is("RESOURCES") );
+        assertThat( ctx.resrcparam().size(), is(1) );
+        assertThat( ctx.resrcparam(0).languageparam().language().getText(), is("fr") );
+        assertThat( ctx.text().size(), is(1) );
+        assertThat( ctx.text(0).getText(), is("Nettoyeur haute pression") );
     }
 
     @Test
@@ -1458,11 +1470,12 @@ public class ICalendarParserTest {
         //  : STATUS (';' other_param)* ':' statvalue CRLF
         //  ;
 
-        String source = "";
+        String source = "STATUS:NEEDS-ACTION\n";
 
         ICalendarParser.StatusContext ctx = getParser(source).status();
 
-        // TODO
+        assertThat( ctx.k_status().getText(), is("STATUS") );
+        assertThat( ctx.statvalue().getText(), is("NEEDS-ACTION") );
     }
 
     @Test
@@ -1473,13 +1486,619 @@ public class ICalendarParserTest {
         //  : SUMMARY summparam* ':' text CRLF
         //  ;
 
-        String source = "";
+        String source = "SUMMARY:Department Party\n";
 
         ICalendarParser.SummaryContext ctx = getParser(source).summary();
 
-        // TODO
+        assertThat( ctx.k_summary().getText(), is("SUMMARY") );
+        assertThat( ctx.text().getText(), is("Department Party") );
     }
-    */
+
+    @Test
+    public void completedTest() {
+
+        //  3.8.2.1 - Date-Time Completed
+        // completed
+        //  : k_completed (SCOL other_param)* COL date_time CRLF
+        //  ;
+
+        String source = "COMPLETED:19960401T150000Z\n";
+
+        ICalendarParser.CompletedContext ctx = getParser(source).completed();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void dtendTest() {
+
+        //  3.8.2.2 - Date-Time End
+        // dtend
+        //  : k_dtend dtendparam* COL date_time_date CRLF
+        //  ;
+
+        String source = "DTEND:19960401T150000Z\n";
+
+        ICalendarParser.DtendContext ctx = getParser(source).dtend();
+
+        assertThat( ctx.getText(), is(source) );
+
+        source = "DTEND;VALUE=DATE:19980704\n";
+
+        ctx = getParser(source).dtend();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void dueTest() {
+
+        //  3.8.2.3 - Date-Time Due
+        // due
+        //  : k_due dueparam* COL date_time_date CRLF
+        //  ;
+
+        String source = "DUE:19980430T000000Z\n";
+
+        ICalendarParser.DueContext ctx = getParser(source).due();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void dtstartTest() {
+
+        //  3.8.2.4 - Date-Time Start
+        // dtstart
+        //  : k_dtstart dtstparam* COL date_time_date CRLF
+        //  ;
+
+        String source = "DTSTART:19980118T073000Z\n";
+
+        ICalendarParser.DtstartContext ctx = getParser(source).dtstart();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void durationTest() {
+
+        //  3.8.2.5 - Duration
+        // duration
+        //  : k_duration (SCOL other_param)* COL dur_value CRLF
+        //  ;
+
+        String source = "DURATION:PT1H0M0S\n";
+
+        ICalendarParser.DurationContext ctx = getParser(source).duration();
+
+        assertThat( ctx.getText(), is(source) );
+
+        source = "DURATION:PT15M\n";
+
+        ctx = getParser(source).duration();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void freebusyTest() {
+
+        //  3.8.2.6 - Free/Busy Time
+        // freebusy
+        //  : k_freebusy fbparam* COL fbvalue CRLF
+        //  ;
+
+        String source = "FREEBUSY;FBTYPE=BUSY-UNAVAILABLE:19970308T160000Z/PT8H30M\n";
+
+        ICalendarParser.FreebusyContext ctx = getParser(source).freebusy();
+
+        assertThat( ctx.getText(), is(source) );
+
+        source = "FREEBUSY;FBTYPE=FREE:19970308T160000Z/PT3H,19970308T200000Z/PT1H\n";
+
+        ctx = getParser(source).freebusy();
+
+        assertThat( ctx.getText(), is(source) );
+
+        source = "FREEBUSY;FBTYPE=FREE:19970308T160000Z/PT3H,19970308T200000Z/PT1H\n" +
+                " ,19970308T230000Z/19970309T000000Z\n";
+
+        ctx = getParser(source).freebusy();
+
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+    }
+
+    @Test
+    public void transpTest() {
+
+        //  3.8.2.7 - Time Transparency
+        // transp
+        //  : k_transp (SCOL other_param)* COL transvalue CRLF
+        //  ;
+
+        String source = "TRANSP:TRANSPARENT\n";
+
+        ICalendarParser.TranspContext ctx = getParser(source).transp();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void tzidTest() {
+
+        // 3.8.3.1 - Time Zone Identifier
+        // tzid
+        //  : k_tzid (SCOL other_param)* COL FSLASH? text CRLF
+        //  ;
+
+        String source = "TZID:America/New_York\n";
+
+        ICalendarParser.TzidContext ctx = getParser(source).tzid();
+
+        assertThat( ctx.getText(), is(source) );
+
+        source = "TZID:/example.org/America/New_York\n";
+
+        ctx = getParser(source).tzid();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void tznameTest() {
+
+        // 3.8.3.2.  Time Zone Name
+        // tzname
+        //  : k_tzname tznparam* COL text CRLF
+        //  ;
+
+        String source = "TZNAME:EST\n";
+
+        ICalendarParser.TznameContext ctx = getParser(source).tzname();
+
+        assertThat( ctx.getText(), is(source) );
+
+        source = "TZNAME;LANGUAGE=fr-CA:HNE\n";
+
+        ctx = getParser(source).tzname();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void tzoffsetfromTest() {
+
+        // 3.8.3.3 - Time Zone Offset From
+        // tzoffsetfrom
+        //  : k_tzoffsetfrom (SCOL other_param)* COL utc_offset CRLF
+        //  ;
+
+        String source = "TZOFFSETFROM:-0500\n";
+
+        ICalendarParser.TzoffsetfromContext ctx = getParser(source).tzoffsetfrom();
+
+        assertThat( ctx.getText(), is(source) );
+
+        source = "TZOFFSETFROM:+1345\n";
+
+        ctx = getParser(source).tzoffsetfrom();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void tzoffsettoTest() {
+
+        // 3.8.3.4 - Time Zone Offset To
+        // tzoffsetto
+        //  : k_tzoffsetto (SCOL other_param)* COL utc_offset CRLF
+        //  ;
+
+        String source = "TZOFFSETTO:-0400\n";
+
+        ICalendarParser.TzoffsettoContext ctx = getParser(source).tzoffsetto();
+
+        assertThat( ctx.getText(), is(source) );
+
+        source = "TZOFFSETTO:+1245\n";
+
+        ctx = getParser(source).tzoffsetto();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void tzurlTest() {
+
+        // 3.8.3.5.  Time Zone URL
+        // tzurl
+        //  : k_tzurl (SCOL other_param)* COL uri CRLF
+        //  ;
+
+        String source = "TZURL:http://timezones.example.org/tz/America-Los_Angeles.ics\n";
+
+        ICalendarParser.TzurlContext ctx = getParser(source).tzurl();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void attendeeTest() {
+
+        // 3.8.4.1 - Attendee
+        // attendee
+        //  : k_attendee attparam* COL cal_address CRLF
+        //  ;
+
+        String source = "ATTENDEE;MEMBER=\"mailto:DEV-GROUP@example.com\":\n" +
+                " mailto:joecool@example.com\n";
+        ICalendarParser.AttendeeContext ctx = getParser(source).attendee();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+
+        source = "ATTENDEE;DELEGATED-FROM=\"mailto:immud@example.com\":\n" +
+                " mailto:ildoit@example.com\n";
+        ctx = getParser(source).attendee();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+
+        source = "ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=TENTATIVE;CN=Henry\n" +
+                " Cabot:mailto:hcabot@example.com\n";
+        ctx = getParser(source).attendee();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+
+        source = "ATTENDEE;ROLE=REQ-PARTICIPANT;DELEGATED-FROM=\"mailto:bob@\n" +
+                " example.com\";PARTSTAT=ACCEPTED;CN=Jane Doe:mailto:jdoe@\n" +
+                " example.com\n";
+        ctx = getParser(source).attendee();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+
+        source = "ATTENDEE;CN=John Smith;DIR=\"ldap://example.com:6666/o=ABC%\n" +
+                " 20Industries,c=US???(cn=Jim%20Dolittle)\":mailto:jimdo@\n" +
+                " example.com\n";
+        ctx = getParser(source).attendee();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+
+        source = "ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=TENTATIVE;DELEGATED-FROM=\n" +
+                " \"mailto:iamboss@example.com\";CN=Henry Cabot:mailto:hcabot@\n" +
+                " example.com\n";
+        ctx = getParser(source).attendee();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+
+        source = "ATTENDEE;ROLE=NON-PARTICIPANT;PARTSTAT=DELEGATED;DELEGATED-TO=\n" +
+                " \"mailto:hcabot@example.com\";CN=The Big Cheese:mailto:iamboss\n" +
+                " @example.com\n";
+        ctx = getParser(source).attendee();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+
+        source = "ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=ACCEPTED;CN=Jane Doe\n" +
+                " :mailto:jdoe@example.com\n";
+        ctx = getParser(source).attendee();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+
+        source = "ATTENDEE;SENT-BY=mailto:jan_doe@example.com;CN=John Smith:\n" +
+                " mailto:jsmith@example.com\n";
+        ctx = getParser(source).attendee();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+    }
+
+    @Test
+    public void contactTest() {
+
+        // 3.8.4.2 - Contact
+        // contact
+        //  : k_contact contparam* COL text CRLF
+        //  ;
+
+        String source = "CONTACT:Jim Dolittle\\, ABC Industries\\, +1-919-555-1234\n";
+        ICalendarParser.ContactContext ctx = getParser(source).contact();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "CONTACT;ALTREP=\"ldap://example.com:6666/o=ABC%20Industries\\,\n" +
+                " c=US???(cn=Jim%20Dolittle)\":Jim Dolittle\\, ABC Industries\\,\n" +
+                " +1-919-555-1234\n";
+        ctx = getParser(source).contact();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+
+        source = "CONTACT;ALTREP=\"CID:part3.msg970930T083000SILVER@example.com\":\n" +
+                " Jim Dolittle\\, ABC Industries\\, +1-919-555-1234\n";
+        ctx = getParser(source).contact();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+
+        source = "CONTACT;ALTREP=\"http://example.com/pdi/jdoe.vcf\":Jim\n" +
+                " Dolittle\\, ABC Industries\\, +1-919-555-1234\n";
+        ctx = getParser(source).contact();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+    }
+
+    @Test
+    public void organizerTest() {
+
+        // 3.8.4.3 - Organizer
+        // organizer
+        //  : k_organizer orgparam* COL cal_address CRLF
+        //  ;
+
+        String source = "ORGANIZER;CN=John Smith:mailto:jsmith@example.com\n";
+        ICalendarParser.OrganizerContext ctx = getParser(source).organizer();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "ORGANIZER;CN=JohnSmith;DIR=\"ldap://example.com:6666/o=DC%20Ass\n" +
+                " ociates,c=US???(cn=John%20Smith)\":mailto:jsmith@example.com\n";
+        ctx = getParser(source).organizer();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+
+        source = "ORGANIZER;SENT-BY=\"mailto:jane_doe@example.com\":\n" +
+                " mailto:jsmith@example.com\n";
+        ctx = getParser(source).organizer();
+        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+    }
+
+    @Test
+    public void recuridTest() {
+
+        // 3.8.4.4 - Recurrence ID
+        // recurid
+        //  : k_recurrence_id ridparam* COL date_time_date CRLF
+        //  ;
+
+        String source = "RECURRENCE-ID;VALUE=DATE:19960401\n";
+        ICalendarParser.RecuridContext ctx = getParser(source).recurid();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RECURRENCE-ID;RANGE=THISANDFUTURE:19960120T120000Z\n";
+        ctx = getParser(source).recurid();
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void relatedTest() {
+
+        // 3.8.4.5.  Related To
+        // related
+        //  : k_related_to relparam* COL text CRLF
+        //  ;
+
+        String source = "RELATED-TO:jsmith.part7.19960817T083000.xyzMail@example.com\n";
+        ICalendarParser.RelatedContext ctx = getParser(source).related();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RELATED-TO:19960401-080045-4000F192713-0052@example.com\n";
+        ctx = getParser(source).related();
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void urlTest() {
+
+        // 3.8.4.6 - Uniform Resource Locator
+        // url
+        //  : k_url (SCOL other_param)* COL uri CRLF
+        //  ;
+
+        String source = "URL:http://example.com/pub/calendars/jsmith/mytime.ics\n";
+        ICalendarParser.UrlContext ctx = getParser(source).url();
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void uidTest() {
+
+        // 3.8.4.7 - Unique Identifier
+        // uid
+        //  : k_uid (SCOL other_param)* COL text CRLF
+        //  ;
+
+        String source = "UID:19960401T080045Z-4000F192713-0052@example.com\n";
+        ICalendarParser.UidContext ctx = getParser(source).uid();
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void exdateTest() {
+
+        // 3.8.5.1 - Exception Date-Times
+        // exdate
+        //  : k_exdate exdtparam* COL date_time_date (COMMA date_time_date)* CRLF
+        //  ;
+
+        String source = "EXDATE:19960402T010000Z,19960403T010000Z,19960404T010000Z\n";
+        ICalendarParser.ExdateContext ctx = getParser(source).exdate();
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void rdateTest() {
+
+        // 3.8.5.2 - Recurrence Date-Times
+        // rdate
+        //  : k_rdate rdtparam* COL date_time_date (COMMA date_time_date)* CRLF
+        //  ;
+
+        String source = "RDATE:19970714T123000Z\n";
+        ICalendarParser.RdateContext ctx = getParser(source).rdate();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RDATE;TZID=America/New_York:19970714T083000\n";
+        ctx = getParser(source).rdate();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "RDATE;VALUE=PERIOD:19960403T020000Z/19960403T040000Z,\n" +
+                " 19960404T010000Z/PT3H\n";
+        ctx = getParser(source).rdate();
+        assertThat( ctx.getText(), is(source) );
+        /*
+        source = "RDATE;VALUE=DATE:19970101,19970120,19970217,19970421\n" +
+                " 19970526,19970704,19970901,19971014,19971128,19971129,19971225\n";
+        ctx = getParser(source).rdate();
+        assertThat( ctx.getText(), is(source) );
+        */
+    }
+
+    @Test
+    public void rruleTest() {
+
+        // 3.8.5.3 - Recurrence Rule
+        // rrule
+        //  : k_rrule (SCOL other_param)* COL recur CRLF
+        //  ;
+
+        String source = "";
+
+        ICalendarParser.RruleContext ctx = getParser(source).rrule();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void actionTest() {
+
+        // 3.8.6.1 - Action
+        // action
+        //  : k_action (SCOL other_param)* COL actionvalue CRLF
+        //  ;
+
+        String source = "";
+
+        ICalendarParser.ActionContext ctx = getParser(source).action();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void repeatTest() {
+
+        // 3.8.6.2 - Repeat Count
+        // repeat
+        //  : k_repeat (SCOL other_param)* COL integer CRLF
+        //  ;
+
+        String source = "";
+
+        ICalendarParser.RepeatContext ctx = getParser(source).repeat();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void triggerTest() {
+
+        // 3.8.6.3 - Trigger
+        // trigger
+        //  : k_trigger trigrel* COL dur_value CRLF
+        //  | k_trigger trigabs* COL date_time CRLF
+        //  ;
+
+        String source = "";
+
+        ICalendarParser.TriggerContext ctx = getParser(source).trigger();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void createdTest() {
+
+        // 3.8.7.1 - Date-Time Created
+        // created
+        //  : k_created (SCOL other_param)* COL date_time CRLF
+        //  ;
+
+        String source = "";
+
+        ICalendarParser.CreatedContext ctx = getParser(source).created();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void dtstampTest() {
+
+        // 3.8.7.2 - Date-Time Stamp
+        // dtstamp
+        //  : k_dtstamp (SCOL other_param)* COL date_time CRLF
+        //  ;
+
+        String source = "";
+
+        ICalendarParser.DtstampContext ctx = getParser(source).dtstamp();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void last_modTest() {
+
+        // 3.8.7.3 - Last Modified
+        // last_mod
+        //  : k_last_modified (SCOL other_param)* COL date_time CRLF
+        //  ;
+
+        String source = "";
+
+        ICalendarParser.Last_modContext ctx = getParser(source).last_mod();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void seqTest() {
+
+        // 3.8.7.4 - Sequence Number
+        // seq
+        //  : k_sequence (SCOL other_param)* COL integer CRLF
+        //  ;
+
+        String source = "";
+
+        ICalendarParser.SeqContext ctx = getParser(source).seq();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void iana_propTest() {
+
+        // 3.8.8.1 - IANA Properties
+        // iana_prop
+        //  : iana_token (SCOL icalparameter)* COL value CRLF
+        //  ;
+
+        String source = "";
+
+        ICalendarParser.Iana_propContext ctx = getParser(source).iana_prop();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void x_propTest() {
+
+        // 3.8.8.2 - Non-Standard Propertie
+        // x_prop
+        //  : x_name (SCOL icalparameter)* COL value CRLF
+        //  ;
+
+        String source = "";
+
+        ICalendarParser.X_propContext ctx = getParser(source).x_prop();
+
+        assertThat( ctx.getText(), is(source) );
+    }
+
+    @Test
+    public void rstatusTest() {
+
+        // 3.8.8.3 - Request Status
+        // rstatus
+        //  : k_request_status rstatparam* COL statcode SCOL text (SCOL text)?
+        //  ;
+
+        String source = "";
+
+        ICalendarParser.RstatusContext ctx = getParser(source).rstatus();
+
+        assertThat( ctx.getText(), is(source) );
+    }
 
     /*
     @Test
