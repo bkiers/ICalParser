@@ -1,4 +1,4 @@
-package horai.parser;
+package ical.parser;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;

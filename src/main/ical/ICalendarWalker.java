@@ -1,7 +1,7 @@
-package horai;
+package ical;
 
-import horai.parser.ICalendarBaseListener;
-import horai.parser.ICalendarParser;
+import ical.parser.ICalendarBaseListener;
+import ical.parser.ICalendarParser;
 
 public class ICalendarWalker extends ICalendarBaseListener {
 
