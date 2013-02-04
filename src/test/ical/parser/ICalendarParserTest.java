@@ -43,8 +43,8 @@ public class ICalendarParserTest {
                 "END:VCALENDAR\n";
         ICalendarParser.IcalobjectContext ctx = getParser(source).icalobject();
         assertThat( ctx.getText(), is(source.replace("\n ", "")) );
-        assertThat( ctx.icalbody().calprop().size(), is(2) );
-        assertThat( ctx.icalbody().component().size(), is(1) );
+        assertThat( ctx.calprop().size(), is(2) );
+        assertThat( ctx.component().size(), is(1) );
 
         source = "BEGIN:VCALENDAR\n" +
                 "PRODID:-//RDU Software//NONSGML HandCal//EN\n" +
@@ -82,8 +82,8 @@ public class ICalendarParserTest {
                 "END:VCALENDAR\n";
         ctx = getParser(source).icalobject();
         assertThat( ctx.getText(), is(source.replace("\n ", "")) );
-        assertThat( ctx.icalbody().calprop().size(), is(2) );
-        assertThat( ctx.icalbody().component().size(), is(2) );
+        assertThat( ctx.calprop().size(), is(2) );
+        assertThat( ctx.component().size(), is(2) );
 
         source = "BEGIN:VCALENDAR\n" +
                 "METHOD:xyz\n" +
@@ -109,8 +109,8 @@ public class ICalendarParserTest {
                 "END:VCALENDAR\n";
         ctx = getParser(source).icalobject();
         assertThat( ctx.getText(), is(source.replace("\n ", "")) );
-        assertThat( ctx.icalbody().calprop().size(), is(3) );
-        assertThat( ctx.icalbody().component().size(), is(1) );
+        assertThat( ctx.calprop().size(), is(3) );
+        assertThat( ctx.component().size(), is(1) );
 
         source = "BEGIN:VCALENDAR\n" +
                 "VERSION:2.0\n" +
@@ -136,8 +136,8 @@ public class ICalendarParserTest {
                 "END:VCALENDAR\n";
         ctx = getParser(source).icalobject();
         assertThat( ctx.getText(), is(source.replace("\n ", "")) );
-        assertThat( ctx.icalbody().calprop().size(), is(2) );
-        assertThat( ctx.icalbody().component().size(), is(1) );
+        assertThat( ctx.calprop().size(), is(2) );
+        assertThat( ctx.component().size(), is(1) );
 
         source = "BEGIN:VCALENDAR\n" +
                 "VERSION:2.0\n" +
@@ -164,8 +164,8 @@ public class ICalendarParserTest {
                 "END:VCALENDAR\n";
         ctx = getParser(source).icalobject();
         assertThat( ctx.getText(), is(source.replace("\n ", "")) );
-        assertThat( ctx.icalbody().calprop().size(), is(2) );
-        assertThat( ctx.icalbody().component().size(), is(1) );
+        assertThat( ctx.calprop().size(), is(2) );
+        assertThat( ctx.component().size(), is(1) );
 
         source = "BEGIN:VCALENDAR\n" +
                 "VERSION:2.0\n" +
@@ -182,8 +182,8 @@ public class ICalendarParserTest {
                 "END:VCALENDAR\n";
         ctx = getParser(source).icalobject();
         assertThat( ctx.getText(), is(source.replace("\n ", "")) );
-        assertThat( ctx.icalbody().calprop().size(), is(2) );
-        assertThat( ctx.icalbody().component().size(), is(1) );
+        assertThat( ctx.calprop().size(), is(2) );
+        assertThat( ctx.component().size(), is(1) );
     }
 
     @Test
@@ -1382,14 +1382,14 @@ public class ICalendarParserTest {
 
         ICalendarParser.VersionContext ctx = getParser(source).version();
         assertThat( ctx.k_version().getText(), is("VERSION") );
-        assertThat( ctx.vervalue().maxver().getText(), is("2.0") );
+        assertThat( ctx.vervalue().float_num(0).getText(), is("2.0") );
 
         source = "VERSION:1.1;2.2\n";
 
         ctx = getParser(source).version();
         assertThat( ctx.k_version().getText(), is("VERSION") );
-        assertThat( ctx.vervalue().minver().getText(), is("1.1") );
-        assertThat( ctx.vervalue().maxver().getText(), is("2.2") );
+        assertThat( ctx.vervalue().float_num(0).getText(), is("1.1") );
+        assertThat( ctx.vervalue().float_num(1).getText(), is("2.2") );
     }
 
     @Test
