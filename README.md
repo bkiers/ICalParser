@@ -1,13 +1,1 @@
-## ICalParser
-
-### Introduction
-
-...
-
-### Download/get library
-
-...
-
-### Some examples
-
-...
+### testing phase, documentation will follow
