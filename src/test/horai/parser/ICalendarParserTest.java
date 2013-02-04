@@ -19,12 +19,9 @@ public class ICalendarParserTest {
 
         // icalobject
         //  : k_begin COL k_vcalendar CRLF
-        //    icalbody
+        //    calprop*?
+        //    component+?
         //    k_end COL k_vcalendar CRLF
-        //  ;
-        //
-        // icalbody
-        //  : calprop*? component+?
         //  ;
 
         String source = "BEGIN:VCALENDAR\n" +

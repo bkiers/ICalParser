@@ -12,13 +12,9 @@ icalstream
 
 icalobject
  : k_begin COL k_vcalendar CRLF 
-   icalbody
+   calprop*? 
+   component+?
    k_end COL k_vcalendar CRLF
- ;
-
-// 3.6 - Calendar Components
-icalbody
- : calprop*? component+?
  ;
 
 calprop
@@ -51,16 +47,8 @@ version
  ;
 
 vervalue
- : minver SCOL maxver
- | maxver
- ;
-
-minver
- : float_num
- ;
-
-maxver
- : float_num
+ : float_num SCOL float_num
+ | float_num
  ;
 
 component
@@ -133,18 +121,6 @@ timezonec
  : k_begin COL k_vtimezone CRLF
    timezoneprop*?
    k_end COL k_vtimezone CRLF
- ;
-
-standardc
- : k_begin COL k_standard CRLF
-   tzprop*?
-   k_end COL k_standard CRLF
- ;
-
-daylightc
- : k_begin COL k_daylight CRLF
-   tzprop*?
-   k_end COL k_daylight CRLF
  ;
 
 // 3.6.6 - Alarm Component
@@ -302,6 +278,18 @@ alarmprop
  | attach
  | x_prop
  | iana_prop
+ ;
+
+standardc
+ : k_begin COL k_standard CRLF
+   tzprop*?
+   k_end COL k_standard CRLF
+ ;
+
+daylightc
+ : k_begin COL k_daylight CRLF
+   tzprop*?
+   k_end COL k_daylight CRLF
  ;
 
 // 3.8.1.1 - Attachment
