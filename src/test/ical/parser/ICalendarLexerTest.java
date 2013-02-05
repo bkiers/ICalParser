@@ -64,6 +64,12 @@ public class ICalendarLexerTest {
         assertThat(getToken("\\\\").getType(), is(ICalendarLexer.ESCAPED_CHAR));
         assertThat(getToken("\\,").getType(), is(ICalendarLexer.ESCAPED_CHAR));
         assertThat(getToken("\\;").getType(), is(ICalendarLexer.ESCAPED_CHAR));
+
+        // an escape can start at the end of the line
+        assertThat(getToken("\\\r\n n").getType(), is(ICalendarLexer.ESCAPED_CHAR));
+        assertThat(getToken("\\\n \\").getType(), is(ICalendarLexer.ESCAPED_CHAR));
+        assertThat(getToken("\\\r\n\t,").getType(), is(ICalendarLexer.ESCAPED_CHAR));
+        assertThat(getToken("\\\r\n ;").getType(), is(ICalendarLexer.ESCAPED_CHAR));
     }
 
     @Test

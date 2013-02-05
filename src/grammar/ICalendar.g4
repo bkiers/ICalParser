@@ -1569,10 +1569,10 @@ WSP
  ;
 
 ESCAPED_CHAR
- : '\\' '\\'
- | '\\' ';'
- | '\\' ','
- | '\\' N
+ : '\\' (CRLF WSP)? '\\'
+ | '\\' (CRLF WSP)? ';'
+ | '\\' (CRLF WSP)? ','
+ | '\\' (CRLF WSP)? N
  ;
 
 CRLF

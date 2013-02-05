@@ -1542,6 +1542,16 @@ public class ICalendarParserTest {
         assertThat( ctx.locparam().size(), is(1) );
         assertThat( ctx.locparam(0).altrepparam().uri().getText(), is("http://xyzcorp.com/conf-rooms/f123.vcf") );
         assertThat( ctx.text().getText(), is("Conference Room - F123\\, Bldg. 002") );
+
+        source = "LOCATION:Sabai Thai\\, 165-169 Princes House\\, Princes Place\\, North Street\\\n" +
+                " , Brighton. BN1 1EA\n";
+
+        ctx = getParser(source).location();
+
+        assertThat( ctx.k_location().getText(), is("LOCATION") );
+        assertThat( ctx.locparam().size(), is(0) );
+        assertThat( ctx.text().getText(), is("Sabai Thai\\, 165-169 Princes House\\, Princes Place\\, North Street\\\n" +
+                " , Brighton. BN1 1EA") );
     }
 
     @Test
