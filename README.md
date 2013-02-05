@@ -27,7 +27,7 @@ Do the following:
 * generate the parser source files: `ant generate`
 * run the `Main` class: `ant run`
 
-The `run` target will parse the file `src/ics/test.ics` and will print some information
+The `run` target will parse `src/ics/test.ics` and will print some information
 about this iCalendar file. If you'd like to parse another file, provide it on the command
 line like this: `ant -Dics=path/to/other/file.ics run`
 
