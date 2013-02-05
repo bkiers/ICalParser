@@ -169,4 +169,4 @@ meaning that the input `"-PT12H"` is a valid `dur-value`. However, the substring
 would already be tokenized as an `IDENTIFIER` token, making it messy in production rule(s)
 to match these corner cases properly (there are much more of such cases!). Therefor the 
 lexer tokenizes single characters and the parser will match keywords (and identifiers), 
-making it bahve much like a [PEG](http://bford.info/packrat/).
+making it behave much like a [PEG](http://bford.info/packrat/).
