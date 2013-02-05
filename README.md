@@ -11,10 +11,11 @@ the parser prepends a package declaration after the ANTLR tool has generated `.j
 files.
 
 Note that this should be considered a pre-alpha release. Although most production rules in 
-the parser are tested, much more thorough tests are preferred. I wrote this grammar to get 
-acquainted with ANTLR v4 not to use the parser in production! However, feel free to send 
-pull requests of fixes, or [report issues](https://github.com/bkiers/ICalParser/issues) 
-you encountered. I am willing to put in some extra effort to make things more robust.
+the parser are tested, much more thorough tests are preferred. My main reason for writing 
+this grammar was to get acquainted with ANTLR v4, not to use the parser in production! 
+However, feel free to send pull requests of fixes, or 
+[report issues](https://github.com/bkiers/ICalParser/issues) you encountered. I am willing 
+to put in some extra effort to make things more robust.
 
 ### Getting started
 
