@@ -10,11 +10,11 @@ grammar contains no target specific code. Therefor the Ant target responsible fo
 the parser prepends a package declaration after the ANTLR tool has generated `.java` source 
 files.
 
-Note that this is a alpha release. Although most production rules in the parser are tested, 
-much more thorough tests are preferred. I wrote this grammar to get acquainted with ANTLR v4
-not to use the parser in production! However, feel free to send pull requests of fixes, or 
-[report issues](https://github.com/bkiers/ICalParser/issues) you encountered. I am willing 
-to put in some extra effort to make things more robust.
+Note that this should be considered a pre-alpha release. Although most production rules in 
+the parser are tested, much more thorough tests are preferred. I wrote this grammar to get 
+acquainted with ANTLR v4 not to use the parser in production! However, feel free to send 
+pull requests of fixes, or [report issues](https://github.com/bkiers/ICalParser/issues) 
+you encountered. I am willing to put in some extra effort to make things more robust.
 
 ### Getting started
 
