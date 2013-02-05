@@ -11,10 +11,11 @@ the parser prepends a package declaration after the ANTLR tool has generated `.j
 files.
 
 Note that this should be considered a pre-alpha release. Although most production rules in 
-the parser are tested, much more thorough tests are preferred. I wrote this grammar to get 
-acquainted with ANTLR v4 not to use the parser in production! However, feel free to send 
-pull requests of fixes, or [report issues](https://github.com/bkiers/ICalParser/issues) 
-you encountered. I am willing to put in some extra effort to make things more robust.
+the parser are tested, much more thorough tests are preferred. My main reason for writing 
+this grammar was to get acquainted with ANTLR v4, not to use the parser in production! 
+However, feel free to send pull requests of fixes, or 
+[report issues](https://github.com/bkiers/ICalParser/issues) you encountered. I am willing 
+to put in some extra effort to make things more robust.
 
 ### Getting started
 
@@ -126,6 +127,9 @@ dtstamp   -> 19980130T134500Z
 organizer -> mailto:unclesam@example.com
 ```
 
+See [src/main/ical/TodoDemo.java](https://github.com/bkiers/ICalParser/blob/master/src/main/ical/TodoDemo.java) 
+for a working version of the demo above.
+
 ### Grammar
 
 I tried to follow the naming convention and grammar rules as used in 
@@ -165,4 +169,4 @@ meaning that the input `"-PT12H"` is a valid `dur-value`. However, the substring
 would already be tokenized as an `IDENTIFIER` token, making it messy in production rule(s)
 to match these corner cases properly (there are much more of such cases!). Therefor the 
 lexer tokenizes single characters and the parser will match keywords (and identifiers), 
-making it bahve much like a [PEG](http://bford.info/packrat/).
+making it behave much like a [PEG](http://bford.info/packrat/).
