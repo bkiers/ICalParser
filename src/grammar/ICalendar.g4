@@ -36,14 +36,14 @@ parse
 
 // 3.4 - iCalendar Object
 icalstream
- : icalobject+
+ : CRLF* icalobject (CRLF+ icalobject)* CRLF*
  ;
 
 icalobject
  : k_begin COL k_vcalendar CRLF 
    calprop*? 
    component+?
-   k_end COL k_vcalendar CRLF
+   k_end COL k_vcalendar
  ;
 
 calprop

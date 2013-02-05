@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ICalParser" default="run">
 
-    <property name="version"          value="0.3" />
+    <property name="version"          value="0.1" />
     <property name="project.name"     value="ICalParser" />
     <property name="main.class"       value="ical.Main" />
     <property name="grammar.dir"      value="src/grammar" />
@@ -12,8 +12,7 @@
     <property name="main.src.dir"     value="src/main" />
     <property name="test.build.dir"   value="${build.dir}/test" />
     <property name="test.src.dir"     value="src/test" />
-    <property name="jar.name"         value="${ant.project.name}-${version}.jar"/>
-    <property name="author"           value="Bart Kiers, bart@big-o.nl" />
+    <property name="ics"              value="src/ics/test.ics" />
 
     <path id="classpath">
         <pathelement location="${main.build.dir}" />
@@ -86,9 +85,13 @@
         </junit>
     </target>
 
-    <target name="run" depends="compile">
+    <!--
+    ant -e -Dics=src/ics/test.ics run
+    -->
+    <target name="run">
         <java classname="${main.class}">
-            <classpath refid="classpath" />
+            <classpath refid="classpath"/>
+            <arg value="${ics}"/>
         </java>
     </target>
 

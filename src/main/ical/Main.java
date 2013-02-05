@@ -6,37 +6,32 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import java.io.File;
+import java.io.FileInputStream;
+
 public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        String source = "BEGIN:VCALENDAR\n" +
-                "VERSION:2.0\n" +
-                "PRODID:-//ABC Corporation//NONSGML My Product//EN\n" +
-                "BEGIN:VTODO\n" +
-                "DTSTAMP:19980130T134500Z\n" +
-                "SEQUENCE:2\n" +
-                "UID:uid4@example.com\n" +
-                "ORGANIZER:mailto:unclesam@example.com\n" +
-                "ATTENDEE;PARTSTAT=ACCEPTED:mailto:jqpublic@example.com\n" +
-                "DUE:19980415T000000\n" +
-                "STATUS:NEEDS-ACTION\n" +
-                "SUMMARY:Submit Income Taxes\n" +
-                "BEGIN:VALARM\n" +
-                "ACTION:AUDIO\n" +
-                "TRIGGER:19980403T120000Z\n" +
-                "ATTACH;FMTTYPE=audio/basic:http://example.com/pub/audio-\n" +
-                " files/ssbanner.aud\n" +
-                "REPEAT:4\n" +
-                "DURATION:PT1H\n" +
-                "END:VALARM\n" +
-                "END:VTODO\n" +
-                "END:VCALENDAR\n";
+        String fileName;
 
-        ICalendarLexer lexer = new ICalendarLexer(new ANTLRInputStream(source));
+        if(args.length == 0) {
+            fileName = "src/ics/test.ics";
+            System.err.println("Didn't provide a file to parse, " +
+                    "falling back to default file: " + fileName);
+        }
+        else {
+            fileName = args[0];
+            System.out.println("Parsing file: " + fileName);
+        }
+
+        ICalendarLexer lexer = new ICalendarLexer(new ANTLRInputStream(new FileInputStream(fileName)));
         ICalendarParser parser = new ICalendarParser(new CommonTokenStream(lexer));
         ParseTree tree = parser.parse();
         ParseTreeWalker walker = new ParseTreeWalker();
+
+        System.out.println("\nParseTreeWalker output:\n");
+
         walker.walk(new ICalendarWalker(), tree);
     }
 }
