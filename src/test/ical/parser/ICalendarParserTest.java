@@ -42,7 +42,7 @@ public class ICalendarParserTest {
                 "END:VEVENT\n" +
                 "END:VCALENDAR\n";
         ICalendarParser.IcalobjectContext ctx = getParser(source).icalobject();
-        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+        assertThat( ctx.getText().trim(), is(source.replace("\n ", "").trim()) );
         assertThat( ctx.calprop().size(), is(2) );
         assertThat( ctx.component().size(), is(1) );
 
@@ -81,7 +81,7 @@ public class ICalendarParserTest {
                 "END:VEVENT\n" +
                 "END:VCALENDAR\n";
         ctx = getParser(source).icalobject();
-        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+        assertThat( ctx.getText().trim(), is(source.replace("\n ", "").trim()) );
         assertThat( ctx.calprop().size(), is(2) );
         assertThat( ctx.component().size(), is(2) );
 
@@ -108,7 +108,7 @@ public class ICalendarParserTest {
                 "END:VEVENT\n" +
                 "END:VCALENDAR\n";
         ctx = getParser(source).icalobject();
-        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+        assertThat( ctx.getText().trim(), is(source.replace("\n ", "").trim()) );
         assertThat( ctx.calprop().size(), is(3) );
         assertThat( ctx.component().size(), is(1) );
 
@@ -135,7 +135,7 @@ public class ICalendarParserTest {
                 "END:VTODO\n" +
                 "END:VCALENDAR\n";
         ctx = getParser(source).icalobject();
-        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+        assertThat( ctx.getText().trim(), is(source.replace("\n ", "").trim()) );
         assertThat( ctx.calprop().size(), is(2) );
         assertThat( ctx.component().size(), is(1) );
 
@@ -163,7 +163,7 @@ public class ICalendarParserTest {
                 "END:VJOURNAL\n" +
                 "END:VCALENDAR\n";
         ctx = getParser(source).icalobject();
-        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+        assertThat( ctx.getText().trim(), is(source.replace("\n ", "").trim()) );
         assertThat( ctx.calprop().size(), is(2) );
         assertThat( ctx.component().size(), is(1) );
 
@@ -181,7 +181,7 @@ public class ICalendarParserTest {
                 "END:VFREEBUSY\n" +
                 "END:VCALENDAR\n";
         ctx = getParser(source).icalobject();
-        assertThat( ctx.getText(), is(source.replace("\n ", "")) );
+        assertThat( ctx.getText().trim(), is(source.replace("\n ", "").trim()) );
         assertThat( ctx.calprop().size(), is(2) );
         assertThat( ctx.component().size(), is(1) );
     }
