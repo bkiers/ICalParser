@@ -126,6 +126,9 @@ dtstamp   -> 19980130T134500Z
 organizer -> mailto:unclesam@example.com
 ```
 
+See [src/main/ical/TodoDemo.java](https://github.com/bkiers/ICalParser/blob/master/src/main/ical/TodoDemo.java) 
+for a working version of the demo above.
+
 ### Grammar
 
 I tried to follow the naming convention and grammar rules as used in 
