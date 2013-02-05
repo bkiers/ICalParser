@@ -30,6 +30,102 @@ The `run` target will parse the file `src/ics/test.ics` and will print some info
 about this iCalendar file. If you'd like to parse another file, provide it on the command
 line like this: `ant -Dics=path/to/other/file.ics run`
 
+### Walking the parse tree
+
+After generating the parser files, ANTLR also creates some listener files that can be used
+to let a tree walker traverse the parse tree the parser creates of the input, and then will
+let you "listen" for certain *enter* or *exit* events that are fired whenever the tree walker
+enters or exits a production rule.
+
+This might sound a bit vague, so I'll give a small demo. Let's say you're only interested 
+in `TODO` components of an iCalendar file, and you'd like to know the `DTSTAMP` and 
+`ORGANIZER` properties of this component.
+
+You start by creating a class, `TodoListener` that extends (the generated) 
+`ICalendarBaseListener`. This `ICalendarBaseListener` has empty methods for *all* production
+rules in the grammar. So we're only going to override the method that gets invoked whenever
+the tree walker enters the `todoc` parser rule:
+
+```java
+class TodoListener extends ICalendarBaseListener {
+
+    /*
+     * The production of a `todoc` in the ANTLR grammar looks like this:
+     *
+     *   // 3.6.2 - To-Do Component
+     *   todoc
+     *    : k_begin COL k_vtodo CRLF
+     *      todoprop*?
+     *      alarmc*?
+     *      k_end COL k_vtodo CRLF
+     *    ;
+     */
+    @Override
+    public void enterTodoc(ICalendarParser.TodocContext ctx) {
+
+        // the first property is DTSTAMP
+        String dtstamp = ctx.todoprop(0).dtstamp().date_time().getText();
+
+        // the 4th property is ORGANIZER
+        String organizer = ctx.todoprop(3).organizer().cal_address().getText();
+
+        System.out.println("dtstamp   -> " + dtstamp);
+        System.out.println("organizer -> " + organizer);
+    }
+}
+```
+
+To test this class, do the following:
+
+```java
+public class TodoDemo {
+
+    public static void main(String[] args) throws Exception {
+
+        FileInputStream fis = new FileInputStream("src/ics/test.ics");
+        ICalendarLexer lexer = new ICalendarLexer(new ANTLRInputStream(fis));
+        ICalendarParser parser = new ICalendarParser(new CommonTokenStream(lexer));
+        ParseTree tree = parser.parse();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(new TodoListener(), tree);
+    }
+}
+```
+
+The file `src/ics/test.ics` contains the following:
+
+```
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ABC Corporation//NONSGML My Product//EN
+BEGIN:VTODO
+DTSTAMP:19980130T134500Z
+SEQUENCE:2
+UID:uid4@example.com
+ORGANIZER:mailto:unclesam@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:jqpublic@example.com
+DUE:19980415T000000
+STATUS:NEEDS-ACTION
+SUMMARY:Submit Income Taxes
+BEGIN:VALARM
+ACTION:AUDIO
+TRIGGER:19980403T120000Z
+ATTACH;FMTTYPE=audio/basic:http://example.com/pub/audio-
+ files/ssbanner.aud
+REPEAT:4
+DURATION:PT1H
+END:VALARM
+END:VTODO
+END:VCALENDAR
+```
+
+If you now run `TodoDemo`, you will see the following being printed to your console:
+
+```
+dtstamp   -> 19980130T134500Z
+organizer -> mailto:unclesam@example.com
+```
+
 ### Grammar
 
 I tried to follow the naming convention and grammar rules as used in 
