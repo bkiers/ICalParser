@@ -72,7 +72,7 @@
         <antcall target="compile" />
     </target>
 
-    <target name="test" depends="compile">
+    <target name="test" depends="generate">
 
         <junit printsummary="yes" fork="yes" haltonfailure="yes">
             <classpath refid="classpath"/>
