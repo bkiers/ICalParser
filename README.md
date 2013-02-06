@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/bkiers/ICalParser.png)](https://travis-ci.org/bkiers/ICalParser)
+
 ## ICalParser
 
 An iCalendar ([RFC 5545](https://tools.ietf.org/html/rfc5545)) parser backed up by an 
