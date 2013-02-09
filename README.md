@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.org/bkiers/ICalParser.png)](https://travis-ci.org/bkiers/ICalParser)
-
-## ICalParser
+## ICalParser [![Build Status](https://travis-ci.org/bkiers/ICalParser.png)](https://travis-ci.org/bkiers/ICalParser)
 
 An iCalendar ([RFC 5545](https://tools.ietf.org/html/rfc5545)) parser backed up by an 
 [ANTLR v4 grammar](https://github.com/bkiers/ICalParser/blob/master/src/grammar/ICalendar.g4).
