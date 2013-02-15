@@ -746,7 +746,7 @@ iana_prop
 // 3.8.8.2 - Non-Standard Propertie
 x_prop
  : x_name (SCOL icalparameter)* COL value CRLF
-;
+ ;
 
 // 3.8.8.3 - Request Status
 rstatus

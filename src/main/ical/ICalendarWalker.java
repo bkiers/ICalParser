@@ -286,6 +286,11 @@ public class ICalendarWalker extends ICalendarBaseListener {
         System.out.println("        Rstatus -> " + ctx.getText().trim().replace("\n", "\\n"));
     }
 
+    @Override
+    public void enterX_prop(ICalendarParser.X_propContext ctx) {
+        System.out.println("        X_prop -> " + ctx.getText().trim().replace("\n", "\\n"));
+    }
+
     // 8.3.3.  Parameters Registry
     // https://tools.ietf.org/html/rfc5545#section-8.3.3
 

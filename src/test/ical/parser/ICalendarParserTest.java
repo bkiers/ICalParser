@@ -2373,6 +2373,18 @@ public class ICalendarParserTest {
         String source = "X-ABC-MMSUBJ;VALUE=URI;FMTTYPE=audio/basic:http://www.example.org/mysubj.au\n";
         ICalendarParser.X_propContext ctx = getParser(source).x_prop();
         assertThat( ctx.getText(), is(source) );
+
+        source = "X-WR-CALNAME:Test Calendar\n";
+        ctx = getParser(source).x_prop();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "X-WR-TIMEZONE:Europe/Copenhagen\n";
+        ctx = getParser(source).x_prop();
+        assertThat( ctx.getText(), is(source) );
+
+        source = "X-WR-CALDESC:Test Calendar\n";
+        ctx = getParser(source).x_prop();
+        assertThat( ctx.getText(), is(source) );
     }
 
     @Test
