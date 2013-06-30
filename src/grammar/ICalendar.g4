@@ -1190,8 +1190,8 @@ period_start
 recur_rule_part
  : k_freq ASSIGN freq
  | k_until ASSIGN enddate
- | k_count ASSIGN digits
- | k_interval ASSIGN digits
+ | k_count ASSIGN count
+ | k_interval ASSIGN interval
  | k_bysecond ASSIGN byseclist
  | k_byminute ASSIGN byminlist
  | k_byhour ASSIGN byhrlist
@@ -1217,6 +1217,14 @@ freq
 enddate
  : date 
  | date_time
+ ;
+
+count
+ : digits
+ ;
+
+interval
+ : digits
  ;
 
 byseclist

@@ -2180,15 +2180,16 @@ public class ICalendarParserTest {
         ctx = getParser(source).rrule();
         assertThat( ctx.getText(), is(source) );
 
-        source = "RRULE:FREQ=YEARLY;INTERVAL=4;BYMONTH=11;BYDAY=TU;BYMONTHDAY=2,3,4,5,6,7,8\n";
+        source = "RRULE:FREQ=YEARLY;INTERVAL=4;BYMONTH=11;BYDAY=TU;BYMONTHDAY=2,3,4,5,6,7,8;COUNT=23\n";
         ctx = getParser(source).rrule();
         assertThat( ctx.getText(), is(source) );
-        assertThat( ctx.recur().recur_rule_part().size(), is(5) );
+        assertThat( ctx.recur().recur_rule_part().size(), is(6) );
         assertThat( ctx.recur().recur_rule_part(0).freq().getText(), is("YEARLY") );
-        assertThat( ctx.recur().recur_rule_part(1).digits().getText(), is("4") );
+        assertThat( ctx.recur().recur_rule_part(1).interval().getText(), is("4") );
         assertThat( ctx.recur().recur_rule_part(2).bymolist().getText(), is("11") );
         assertThat( ctx.recur().recur_rule_part(3).bywdaylist().getText(), is("TU") );
         assertThat( ctx.recur().recur_rule_part(4).bymodaylist().getText(), is("2,3,4,5,6,7,8") );
+        assertThat( ctx.recur().recur_rule_part(5).count().getText(), is("23") );
 
         source = "RRULE:FREQ=MONTHLY;COUNT=3;BYDAY=TU,WE,TH;BYSETPOS=3\n";
         ctx = getParser(source).rrule();
