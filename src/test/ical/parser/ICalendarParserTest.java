@@ -2386,6 +2386,10 @@ public class ICalendarParserTest {
         source = "X-WR-CALDESC:Test Calendar\n";
         ctx = getParser(source).x_prop();
         assertThat( ctx.getText(), is(source) );
+
+        source = "X-WR-CALDESC2:Test Calendar\n";
+        ctx = getParser(source).x_prop();
+        assertThat( ctx.getText(), is(source) );
     }
 
     @Test
