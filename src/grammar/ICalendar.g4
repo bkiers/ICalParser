@@ -1350,7 +1350,7 @@ language_char
 
 // Reserved for experimental use.
 x_name
- : X (alpha_num alpha_num alpha_num+ MINUS)? (alpha | MINUS)+
+ : X (alpha_num alpha_num alpha_num+ MINUS)? (alpha_num | MINUS)+
  ;
 
 alpha_num
