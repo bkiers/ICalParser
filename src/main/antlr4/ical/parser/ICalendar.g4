@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 by Bart Kiers
+ * Copyright (c) 2023 by Bart Kiers
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,7 +29,6 @@
  */
 grammar ICalendar;
 
-////////////////////////////// parser rules //////////////////////////////
 parse
  : icalstream EOF
  ;
@@ -323,15 +322,23 @@ daylightc
 
 // 3.8.1.1 - Attachment
 attach
- : k_attach attachparam* ( COL uri 
-                         | SCOL k_encoding ASSIGN k_base D6 D4 SCOL k_value ASSIGN k_binary COL binary
-                         )
-   CRLF
+ : k_attach attachparam* COL ( binary | uri ) CRLF
  ;
 
 attachparam
- : SCOL fmttypeparam
+ : SCOL k_encoding ASSIGN k_base D6 D4
+ | SCOL k_value ASSIGN k_binary
+ | SCOL fmttypeparam
  | SCOL other_param
+ ;
+
+// 3.3.13 - As defined in Section 3 of [RFC3986].
+uri
+ : scheme COL qsafe_char+
+ ;
+
+scheme
+ : alpha ( alpha | digit | PLUS | MINUS | DOT )*
  ;
 
 // 3.8.1.2 - Categories
@@ -1039,10 +1046,7 @@ time
  : time_hour time_minute time_second Z?
  ;
 
-// 3.3.13 - As defined in Section 3 of [RFC3986].
-uri
- : qsafe_char+
- ;
+// 3.3.13 - As defined in Section 3 of [RFC3986]
 
 // 3.3.14
 utc_offset
@@ -1353,55 +1357,6 @@ x_name
  : X (alpha_num alpha_num alpha_num+ MINUS)? (alpha_num | MINUS)+
  ;
 
-alpha_num
- : alpha
- | digit
- ;
-
-// The digits: 0..9
-digit
- : D0 
- | D1 
- | D2 
- | D3 
- | D4 
- | D5 
- | D6 
- | D7 
- | D8 
- | D9
- ;
-
-// Any alpha char
-alpha
- : A
- | B
- | C
- | D
- | E
- | F
- | G
- | H
- | I
- | J
- | K
- | L
- | M
- | N
- | O
- | P
- | Q
- | R
- | S
- | T
- | U
- | V
- | W
- | X
- | Y
- | Z
- ;
-
 // Case insensitive keywords
 k_accepted : A C C E P T E D;
 k_action : A C T I O N;
@@ -1566,7 +1521,55 @@ k_weekly : W E E K L Y;
 k_wkst : W K S T;
 k_yearly : Y E A R L Y;
 
-////////////////////////////// lexer rules //////////////////////////////
+alpha_num
+ : alpha
+ | digit
+ ;
+
+// Any alpha char
+alpha
+ : A
+ | B
+ | C
+ | D
+ | E
+ | F
+ | G
+ | H
+ | I
+ | J
+ | K
+ | L
+ | M
+ | N
+ | O
+ | P
+ | Q
+ | R
+ | S
+ | T
+ | U
+ | V
+ | W
+ | X
+ | Y
+ | Z
+ ;
+
+// The digits: 0..9
+digit
+ : D0
+ | D1
+ | D2
+ | D3
+ | D4
+ | D5
+ | D6
+ | D7
+ | D8
+ | D9
+ ;
+
 LINE_FOLD
  : CRLF WSP -> skip
  ;
@@ -1584,7 +1587,7 @@ ESCAPED_CHAR
  ;
 
 CRLF
- : '\r'? '\n' 
+ : '\r'? '\n'
  | '\r'
  ;
 
@@ -1595,33 +1598,6 @@ CONTROL
  | [\u000E-\u001F]
  | [\u007F]
  ;
-
-A : [aA];
-B : [bB];
-C : [cC];
-D : [dD];
-E : [eE];
-F : [fF];
-G : [gG];
-H : [hH];
-I : [iI];
-J : [jJ];
-K : [kK];
-L : [lL];
-M : [mM];
-N : [nN];
-O : [oO];
-P : [pP];
-Q : [qQ];
-R : [rR];
-S : [sS];
-T : [tT];
-U : [uU];
-V : [vV];
-W : [wW];
-X : [xX];
-Y : [yY];
-Z : [zZ];
 
 EXCLAMATION : '!';
 DQUOTE : '"';
@@ -1665,6 +1641,33 @@ X7B : '{';
 X7C : '|';
 X7D : '}';
 X7E : '~';
+
+A : [aA];
+B : [bB];
+C : [cC];
+D : [dD];
+E : [eE];
+F : [fF];
+G : [gG];
+H : [hH];
+I : [iI];
+J : [jJ];
+K : [kK];
+L : [lL];
+M : [mM];
+N : [nN];
+O : [oO];
+P : [pP];
+Q : [qQ];
+R : [rR];
+S : [sS];
+T : [tT];
+U : [uU];
+V : [vV];
+W : [wW];
+X : [xX];
+Y : [yY];
+Z : [zZ];
 
 NON_US_ASCII
  : .
