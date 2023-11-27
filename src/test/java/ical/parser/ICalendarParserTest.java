@@ -1,6 +1,6 @@
 package ical.parser;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.Test;
 
@@ -10,8 +10,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ICalendarParserTest {
 
     private ICalendarParser getParser(String source) {
-        ICalendarLexer lexer = new ICalendarLexer(new ANTLRInputStream(source));
-        return new ICalendarParser(new CommonTokenStream(lexer));
+        ICalendarLexer lexer = new ICalendarLexer(CharStreams.fromString(source));
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(DescriptiveBailErrorListener.INSTANCE);
+
+        ICalendarParser parser = new ICalendarParser(new CommonTokenStream(lexer));
+        parser.removeErrorListeners();
+        parser.addErrorListener(DescriptiveBailErrorListener.INSTANCE);
+
+        return parser;
     }
 
     @Test
@@ -1397,10 +1404,14 @@ public class ICalendarParserTest {
 
         // 3.8.1.1 - Attachment
         // attach
-        //  : ATTACH attachparam* ( ':' uri
-        //                        | ';' ENCODING '=' BASE '6' '4' ';' VALUE '=' BINARY ':' binary
-        //                        )
-        //    CRLF
+        //  : k_attach attachparam* COL ( binary | uri ) CRLF
+        //  ;
+        //
+        // attachparam
+        //  : SCOL k_encoding ASSIGN k_base D6 D4
+        //  | SCOL k_value ASSIGN k_binary
+        //  | SCOL fmttypeparam
+        //  | SCOL other_param
         //  ;
 
         String source = "ATTACH:CID:jsmith.part3.960817T083000.xyzMail@example.com\n";
@@ -1417,6 +1428,30 @@ public class ICalendarParserTest {
         assertThat( ctx.attachparam().size(), is(1) );
         assertThat( ctx.attachparam(0).fmttypeparam().getText(), is("FMTTYPE=application/postscript") );
         assertThat( ctx.uri().getText(), is("ftp://example.com/pub/reports/r-960812.ps") );
+    }
+
+    // https://github.com/antlr/grammars-v4/pull/3848
+    @Test
+    public void attachTest2() {
+
+        // 3.8.1.1 - Attachment
+        // attach
+        //  : k_attach attachparam* COL ( binary | uri ) CRLF
+        //  ;
+        //
+        // attachparam
+        //  : SCOL k_encoding ASSIGN k_base D6 D4
+        //  | SCOL k_value ASSIGN k_binary
+        //  | SCOL fmttypeparam
+        //  | SCOL other_param
+        //  ;
+
+        String source = "ATTACH;FMTTYPE=text/plain;ENCODING=BASE64;VALUE=BINARY:VGhlIH\n" +
+                " F1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZy4\n";
+
+        ICalendarParser.AttachContext ctx = getParser(source).attach();
+        assertThat( ctx.k_attach().getText(), is("ATTACH") );
+        assertThat( ctx.binary().getText(), is("VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZy4") );
     }
 
     @Test
@@ -1888,7 +1923,7 @@ public class ICalendarParserTest {
         ctx = getParser(source).attendee();
         assertThat( ctx.getText(), is(source.replace("\n ", "")) );
 
-        source = "ATTENDEE;SENT-BY=mailto:jan_doe@example.com;CN=John Smith:\n" +
+        source = "ATTENDEE;SENT-BY=\"mailto:jan_doe@example.com\";CN=John Smith:\n" +
                 " mailto:jsmith@example.com\n";
         ctx = getParser(source).attendee();
         assertThat( ctx.getText(), is(source.replace("\n ", "")) );
@@ -2305,7 +2340,7 @@ public class ICalendarParserTest {
         //  : k_dtstamp (SCOL other_param)* COL date_time CRLF
         //  ;
 
-        String source = "\n";
+        String source = "DTSTAMP:19991231T235959Z\n";
         ICalendarParser.DtstampContext ctx = getParser(source).dtstamp();
         assertThat( ctx.getText(), is(source) );
     }
